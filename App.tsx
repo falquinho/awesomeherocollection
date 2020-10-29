@@ -6,7 +6,11 @@ import OnboardingScreen from './src/screens/onboarding/onboarding';
 import ComixCollectionScreen from './src/screens/comix-collection/comix-collection';
 import AppTheme from './theme';
 
-declare const global: {HermesInternal: null | {}};
+declare const global: {
+  HermesInternal: null | {},
+  marvelApiKey: string,
+};
+global.marvelApiKey = "558ed6347bbea27b6f865ad4d0cb3cb1";
 
 const Stack = createStackNavigator();
 
