@@ -15,14 +15,12 @@ global.marvelApiKey = "558ed6347bbea27b6f865ad4d0cb3cb1";
 const Stack = createStackNavigator();
 
 const App = () => (
-  <PaperProvider theme={AppTheme}>
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="onboarding">
-        <Stack.Screen component={OnboardingScreen} name="onboarding"/>
-        <Stack.Screen component={ComixCollectionScreen} name="comixCollection"/>
-      </Stack.Navigator>
-    </NavigationContainer>
-  </PaperProvider>
+  <NavigationContainer>
+    <Stack.Navigator initialRouteName="onboarding">
+      <Stack.Screen component={OnboardingScreen} name="onboarding"/>
+      <Stack.Screen component={ComixCollectionScreen} name="comixCollection"/>
+    </Stack.Navigator>
+  </NavigationContainer>
 );
 
 export default App;

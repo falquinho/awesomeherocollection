@@ -1,14 +1,14 @@
-import { StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from "react-native";
-import React from 'react';
+import { StyleProp, StyleSheet, TouchableOpacity, ViewStyle, ButtonProps } from "react-native";
+import React, { ReactElement } from 'react';
 import GlobalStyles from '../../styles';
 import { Button, Icon } from "react-native-elements";
 
-interface IProps {
-    label: string,
+interface IProps extends ButtonProps {
+    title: string,
     onPress: () => void,
     style?: StyleProp<ViewStyle>,
-    icon?: string,
-    iconSide?: "start" | "end",
+    icon?: boolean | ReactElement<any>,
+    iconRight?: boolean,
     loading?: boolean,
     disabled?: boolean,
 }
@@ -24,14 +24,9 @@ export default function ComicButton(props: IProps) {
             containerStyle={[GlobalStyles.panelBorder, props.style]}
             raised
             TouchableComponent={TouchableOpacity}
-            title="Next"
             loadingProps={{color: "black"}}
-            loading={props.loading}
-            disabled={props.disabled}
-            icon={props.icon? <Icon name={props.icon}/> : undefined}
-            iconRight={props.iconSide == "end"}
             titleStyle={{fontFamily: "ComicNeue-Bold", color: "black"}}
-            onPress={props.onPress}
+            {...props}
         />
     );
 }
