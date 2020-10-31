@@ -1,10 +1,9 @@
 import React from 'react';
 import { NavigationProp } from '@react-navigation/native';
-import { SafeAreaView, Text } from 'react-native';
+import { SafeAreaView, Alert } from 'react-native';
 import ComicPanel from '../../components/ComicPanel';
-import { color } from 'react-native-reanimated';
-import { ComicText } from '../../components/ComicText';
-import ComicButton from '../../components/ComicButton';
+import { Button, Text } from 'react-native-elements';
+import { initialWindowMetrics } from 'react-native-safe-area-context';
 
 interface Props {
   navigation: NavigationProp<any>,
@@ -22,6 +21,9 @@ class OnboardingScreen extends React.Component<Props, State> {
       pageIndex: 0,
       favoriteHero: "",
     }
+  }
+  
+  componentDidMount() {
     const { navigation } = this.props;
     navigation.setOptions({ header: () => null });
   }
@@ -30,15 +32,10 @@ class OnboardingScreen extends React.Component<Props, State> {
     return (
       <SafeAreaView style={{flex: 1}}>
         <ComicPanel style={{flex: 2}} color="#94d315">
+          <Text style={{fontSize: 18}}>Heelo World!</Text>
         </ComicPanel>
         <ComicPanel style={{flex: 1}} color="#d3b315">
-          <ComicButton
-            label="Press Me!"
-            onPress={() => {}}
-            icon="arrow-forward"
-            iconSide="end"
-            style={{margin: 4, width: 128, alignSelf: "flex-end"}}
-          />
+          <Button title="Next" onPress={() => {}}/>
         </ComicPanel>
       </SafeAreaView>
     );
