@@ -1,8 +1,7 @@
 import React from 'react';
 import { StyleSheet, Image, ViewProps, ImageSourcePropType } from 'react-native';
-import LinearGradient, { LinearGradientProps } from 'react-native-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 import GlobalStyles from '../../styles';
-import { abs } from 'react-native-reanimated';
 
 interface ComicPanelProps extends ViewProps{
     /** Hex color string */
