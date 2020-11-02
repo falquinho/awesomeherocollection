@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, View, StyleSheet } from 'react-native';
+import { SafeAreaView, View, StyleSheet, ActivityIndicator } from 'react-native';
 import { Button, Text } from 'react-native-elements';
 import * as Animatable from 'react-native-animatable';
 import ComicPanel from '../../components/ComicPanel';
@@ -38,7 +38,7 @@ function OnboardingPickFavorite(props: Props) {
       <ComicPanel style={{padding: 8, alignSelf: "flex-start"}}>
         <Text>{I18n.t("onboardingMyFavorite")}</Text>
       </ComicPanel>
-
+      <ActivityIndicator size="large" color="#ffffff"/>
     </ComicPanel>
     <View style={styles.btnRow}>
       <Button containerStyle={[styles.btnLeft]} title={I18n.t("back")} onPress={props.onBackPress}/>
