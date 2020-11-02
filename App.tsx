@@ -10,9 +10,7 @@ import { flipInAnim, flipOutAnim } from './src/utils/animations';
 
 declare const global: {
   HermesInternal: null | {},
-  marvelApiKey: string,
 };
-global.marvelApiKey = "558ed6347bbea27b6f865ad4d0cb3cb1";
 
 Animatable.initializeRegistryWithDefinitions({
   flipInAnim,
