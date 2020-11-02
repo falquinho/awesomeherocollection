@@ -21,7 +21,7 @@ function OnboardingPickFavorite(props: Props) {
       console.log("Heroes: ", res);
     })
     .catch(err => {
-      console.log("Error fetching heroes: ", err);
+      console.log("Error fetching heroes: ", err.response.data);
     });
   });
 
