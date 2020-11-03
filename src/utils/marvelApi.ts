@@ -6,7 +6,7 @@ const privateKey = "3fbfccd9a79d7b1fca56286354476059b6464e48"; // what can I do.
 
 const hash = (ts: number) => md5('' + ts + privateKey  + publicKey);
 
-const reqParams = (): string => {
+export const reqParams = (): string => {
     const ts = Date.now();
     return `?apikey=${publicKey}&ts=${ts}&hash=${hash(ts)}`;
 };

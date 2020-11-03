@@ -14,10 +14,10 @@ function OnboardingIntro(props: {onNextPress: () => void}) {
   return (
     <Animatable.View animation="flipInAnim" style={[styles.container]}>
     <ComicPanel style={{flex: 3}} color="#94d315" backgroundImage={require("../../assets/imgs/bluredCityBkg.jpeg")}>
-      <ComicPanel color="#ffffff" style={{padding: 8, width: 158, alignItems: "center"}}>
+      <ComicPanel color="#ffffff" style={styles.locationPanel}>
         <Text>{I18n.t('onboardingPlace')} {timeLabel}.</Text>
       </ComicPanel>
-      <View style={[styles.row]}>
+      <View style={{flex: 1, padding: 16}}>
         <View>
           <Animatable.View animation="zoomIn" duration={400} delay={baseDelay + 600}>
             <SpeechBubble style={styles.speechBubble}>
@@ -38,15 +38,16 @@ function OnboardingIntro(props: {onNextPress: () => void}) {
         />
       </View>
     </ComicPanel>
-    <ComicPanel style={{flex: 1}} color="#d3b315">
-    </ComicPanel>
-    <Button 
-    title={I18n.t("next")}
-    onPress={props.onNextPress} 
-    containerStyle={[styles.btnContainer]} 
-    icon={<Icon name="arrow-forward"/>} 
-    iconRight
-    />
+    <View style={{flexDirection: "row"}}>
+      <ComicPanel style={{flex: 1}} color="#444444"/>
+      <Button 
+        title={I18n.t("next")}
+        onPress={props.onNextPress} 
+        containerStyle={[styles.btnContainer]} 
+        icon={<Icon name="arrow-forward"/>} 
+        iconRight
+      />
+    </View>
     </Animatable.View>
   );
 }
@@ -60,14 +61,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: "80%",
   },
+  locationPanel: {
+    padding: 8,
+    alignSelf: "flex-start",
+  },
   image: {
-    height: "100%",
-    width: "60%",
+    position: "absolute",
+    width: "70%",
+    top: 16,
+    right: 16,
     resizeMode: "contain",
   },
   btnContainer: {
     alignSelf: "flex-end",
-    margin: 4,
+    marginHorizontal: 4,
+    marginVertical: 6,
   },
   speechBubble: {
     width: 128,
