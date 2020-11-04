@@ -6,9 +6,9 @@ const privateKey = "3fbfccd9a79d7b1fca56286354476059b6464e48"; // what can I do.
 
 const hash = (ts: number) => md5('' + ts + privateKey  + publicKey);
 
-const reqParams = (): string => {
+const reqParams = (offset?: number): string => {
     const ts = Date.now();
-    return `?apikey=${publicKey}&ts=${ts}&hash=${hash(ts)}`;
+    return `?apikey=${publicKey}&ts=${ts}&hash=${hash(ts)}` + (offset != undefined? `&offset=${offset}` : '');
 };
 
 const marvelAxios = axios.create({
@@ -17,7 +17,7 @@ const marvelAxios = axios.create({
 })
 
 const marvelApi = {
-    characters: (): Promise<any> => marvelAxios.get(`/characters${reqParams()}`),
+    characters: (offset?: number): Promise<any> => marvelAxios.get(`/characters${reqParams(offset)}`),
     characterComics: (characterId: number): Promise<any> => marvelAxios.get(`/character/${characterId}/comics${reqParams()}`),
 }
 

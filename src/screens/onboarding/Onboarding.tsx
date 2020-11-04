@@ -54,13 +54,6 @@ class OnboardingScreen extends React.Component<Props, State> {
       prevPage: this.state.currPage,
       currPage: this.pages[newIndex],
     });
-    if(newIndex < currPageIndex) {
-      this.prevAnimatableRef?.flipInReverse(500);
-      this.currAnimatableRef?.flipOutReverse(500);
-    } else {
-      this.prevAnimatableRef?.flipOut(500);
-      this.currAnimatableRef?.flipIn(500);
-    }
   }
 
   completeOnboarding() {
@@ -70,12 +63,7 @@ class OnboardingScreen extends React.Component<Props, State> {
   render() {
     const { currPage, prevPage } = this.state;
     return <>
-      <Animatable.View style={{flex: 1}} ref={ref => this.currAnimatableRef = ref}>
-        {currPage}
-      </Animatable.View>
-      <Animatable.View style={[styles.previousContainer]} ref={ref => this.prevAnimatableRef = ref}>
-        {prevPage}
-      </Animatable.View>
+      {currPage}
     </>;
   }
 }
