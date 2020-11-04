@@ -8,6 +8,7 @@ interface ITranslation {
     next: string,
     back: string,
     letsGo: string,
+    fetchingHeroes: string,
 }
 
 export default ITranslation;

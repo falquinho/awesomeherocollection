@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { ViewStyle, View, ViewProps } from 'react-native';
 import Svg, { Polygon } from 'react-native-svg';
 import GlobalStyles from '../../styles';
@@ -9,15 +9,9 @@ interface SpeechBubleProps extends ViewProps{
     children?: any,
 }
 
-function SpeechBubble (props: SpeechBubleProps) {
+function SpeechBubble (props: SpeechBubleProps): ReactElement {
   return (
     <View {...props} style={[GlobalStyles.panelBorder, bubbleStyle, props.style]}>
-      {/* <Svg height="100" width="100">
-        <Polygon
-          points="40,5 70,80 25,95"
-          fill="lime"
-        />
-      </Svg> */}
     </View>
   );
 }

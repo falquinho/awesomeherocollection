@@ -4,10 +4,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import GlobalStyles from '../../styles';
 
 interface ComicPanelProps extends ViewProps{
-    /** Hex color string */
-    color?: string,
-    backgroundImage?: ImageSourcePropType,
-    children?: any,
+  /** Hex color string */
+  color?: string,
+  backgroundImage?: ImageSourcePropType,
+  children?: any,
 }
 
 /**
@@ -22,7 +22,7 @@ export default function ComicPanel(props: ComicPanelProps) {
                 end={{x: 1.5, y: -0.5}}
                 colors={[props.color, "#ffffff"]}
             />}
-            {props.backgroundImage && <Image source={props.backgroundImage} style={styles.backgroundImage}/>}
+            {props.backgroundImage != undefined && <Image source={props.backgroundImage} style={styles.backgroundImage}/>}
             {props.children}
         </View>
     )

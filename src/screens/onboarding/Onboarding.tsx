@@ -2,7 +2,10 @@ import React, { ReactElement } from 'react';
 import { NavigationProp } from '@react-navigation/native';
 import OnboardingIntro from './OnboardingIntro';
 import OnboardingPickFavorite from './OnboardingPickFavorite';
-import { Alert, StyleSheet } from 'react-native';
+import { Alert, SafeAreaView, View, StyleSheet } from 'react-native';
+import { Button, Icon } from 'react-native-elements';
+import I18n from '../../../I18n';
+import RNBootSplash from "react-native-bootsplash";
 import * as Animatable from 'react-native-animatable';
 
 interface Props {
@@ -14,12 +17,13 @@ interface State {
   currPage: ReactElement | undefined,
   prevPage: ReactElement | undefined,
   favoriteHero: string,
+  animationPlaying: boolean,
 }
 
 class OnboardingScreen extends React.Component<Props, State> {
   private pages = [
-    <OnboardingIntro onNextPress={() => this.changePage(1)}/>,
-    <OnboardingPickFavorite onBackPress={() => this.changePage(-1)} onFinishPress={() => {}}/>
+    <OnboardingIntro/>,
+    <OnboardingPickFavorite/>,
   ]
 
   private currAnimatableRef: any;
@@ -32,12 +36,14 @@ class OnboardingScreen extends React.Component<Props, State> {
       currPage: this.pages[0],
       prevPage: undefined,
       favoriteHero: "",
+      animationPlaying: false,
     }
   }
   
   componentDidMount() {
     const { navigation } = this.props;
     navigation.setOptions({ header: () => null });
+    RNBootSplash.hide({ duration: 250 });
   }
 
   /**
@@ -61,21 +67,60 @@ class OnboardingScreen extends React.Component<Props, State> {
   }
 
   render() {
-    const { currPage, prevPage } = this.state;
-    return <>
-      {currPage}
-    </>;
+    const { 
+      currPageIndex, 
+      favoriteHero,
+      animationPlaying,
+    } = this.state;
+    const currentPage = this.pages[currPageIndex];
+    const prevPage = this.pages[currPageIndex - 1];
+    return (
+      <SafeAreaView style={{flex: 1}}>
+        <View style={{flex: 1}}>
+          {currentPage}
+          {prevPage && animationPlaying && (
+            <Animatable.View 
+              style={{position: "absolute", width: "100%", height: "100%"}} 
+              animation="flipOutAnim"
+              onAnimationEnd={() => this.setState({animationPlaying: false})}>
+              {prevPage}
+            </Animatable.View>
+          )}
+        </View>
+        <View style={styles.controls}>
+          {currPageIndex > 0 && <Button 
+            containerStyle={[{flex: 1}]} 
+            title={I18n.t("back")}
+            icon={<Icon name="arrow-back"/>} 
+            onPress={() => this.changePage(-1)}
+          />}
+          {currPageIndex > 0 && <View style={{width: 8}}/>}
+          {currPageIndex < this.pages.length -1 && <Button 
+            containerStyle={[{flex: 1}]} 
+            title={I18n.t("next")}
+            icon={<Icon name="arrow-forward"/>}
+            iconRight
+            onPress={() => this.changePage(1)}
+          />}
+          {currPageIndex == this.pages.length -1 && <Button 
+            containerStyle={[{flex: 1}]} 
+            title={I18n.t("letsGo")}
+            icon={<Icon name="done"/>}
+            iconRight
+            disabled={!favoriteHero}
+          />}
+        </View>
+      </SafeAreaView>
+    )
   }
 }
 
 const styles = StyleSheet.create({
-  previousContainer: {
-    position: "absolute", 
-    width: "100%",
-    height: "100%",
-    top: 0,
-    left: 0
+  controls: { 
+    flexDirection: "row",
+    marginVertical: 6,
+    marginHorizontal: 6,
   }
-});
+})
 
 export default OnboardingScreen;

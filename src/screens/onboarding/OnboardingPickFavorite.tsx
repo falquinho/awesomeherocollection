@@ -1,17 +1,17 @@
 import React from 'react';
-import { SafeAreaView, View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
-import { Button, Text } from 'react-native-elements';
+import { SafeAreaView, View, StyleSheet, FlatList, TextInput } from 'react-native';
+import { Text, Icon } from 'react-native-elements';
 import * as Animatable from 'react-native-animatable';
 import ComicPanel from '../../components/ComicPanel';
 import I18n from '../../../I18n';
 import marvelApi from '../../utils/marvelApi';
 import { retrieveStoredCharacters, storeCharacterArray } from '../../utils/characterArrayStorage';
 import { ApiCharacter } from '../../interfaces/ApiCharacter';
+import SpeechBubble from '../../components/SpeechBubble';
+import debounce from 'lodash/debounce';
 import { CharacterPanel } from '../../components/CharacterPanel';
 
 interface Props {
-  onBackPress: () => void,
-  onFinishPress: () => void,
 }
 
 interface State {
@@ -19,6 +19,9 @@ interface State {
   favoriteId: number,
   loadMsg: string,
   totalCharactes: number,
+  selectedHero: number,
+  searchMode: boolean,
+  searchString: string,
 }
 
 class OnboardingPickFavorite extends React.Component<Props, State> {
@@ -29,6 +32,9 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
       favoriteId: -1,
       loadMsg: "",
       totalCharactes: 2**30,
+      selectedHero: -1,
+      searchMode: false,
+      searchString: "",
     }
   }
 
@@ -63,58 +69,92 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
     })
   }
 
+  debouncedHeroSearch = debounce(() => {
+    console.log("Debounced Hero Search: ", this.state.searchString);
+  }, 400);
+
   render() {
-    const { heroList, loadMsg } = this.state;
+    const { 
+      heroList, 
+      searchString, 
+      searchMode
+    } = this.state;
     return (
-    <SafeAreaView style={{flex: 1, backgroundColor: "white"}}>
-      <ComicPanel style={{flex: 1}} color="#d6c64d">
-        <Animatable.Image 
-          source={require("../../assets/imgs/heroinBust.png")} 
-          animation="zoomIn"
-        />
-      </ComicPanel>
+      <SafeAreaView style={{flex: 1}}>
+        <ComicPanel style={{flex: 1}} color="#d6c64d">
+          <Animatable.Image
+            style={styles.image}
+            source={require("../../assets/imgs/heroinBust.png")} 
+            animation="fadeIn"
+          />
+          <Animatable.View animation="zoomIn" style={{margin: 16, width: "40%"}}>
+            <SpeechBubble>
+              <Text>{I18n.t("onboardingAskFavorite")}</Text>
+            </SpeechBubble>
+          </Animatable.View>
+        </ComicPanel>
 
-      <ComicPanel style={{paddingHorizontal: 8, paddingVertical: 12}}>
-        <Text>{I18n.t("onboardingMyFavorite")}</Text>
-      </ComicPanel>
+        {!searchMode && (
+          <ComicPanel style={styles.favoriteBar}>
+            <Text>{I18n.t("onboardingMyFavorite")}</Text>
+            <Icon name="search" onPress={() => this.setState({searchMode: true, searchString: ""})}/>
+          </ComicPanel>
+        )}
 
-      <ComicPanel style={{flex: 2}} color="#35185e">
-        <View style={{flex: 1, alignItems: "center"}}>
-          {heroList.length > 0 && (
-            <FlatList
-              data={heroList}
-              renderItem={({item}) => <CharacterPanel character={item}/>}
-              keyExtractor={(item) => '' + item.id}
-              numColumns={2}
-              onEndReachedThreshold={0.2}
-              onEndReached={() => this.fetchNextCharacterBatch()}
+        {searchMode && (
+          <ComicPanel style={styles.favoriteBar}>
+            <TextInput
+              style={{flex: 1}}
+              autoFocus
+              maxLength={32}
+              returnKeyType="search"
+              onChangeText={text => {
+                this.setState({ searchString: text });
+                this.debouncedHeroSearch();
+              }}
             />
-          )}
-        </View>
-        {loadMsg.length > 0 && <ActivityIndicator size="large" color="#ffffff"/>}
-      </ComicPanel>
-      <View style={styles.btnRow}>
-        <Button containerStyle={[styles.btnLeft]} title={I18n.t("back")} onPress={this.props.onBackPress}/>
-        <Button containerStyle={[styles.btnRight]} title={I18n.t("letsGo")} onPress={this.props.onFinishPress}/>
-      </View>
-    </SafeAreaView>
+            <Icon name="close" onPress={() => this.setState({searchMode: false, searchString: ""})}/>
+          </ComicPanel>
+        )}
+
+        <ComicPanel style={{flex: 3}} color="#35185e">
+          <View style={styles.heroesContainer}>
+            {heroList.length > 0 && (
+              <FlatList
+                data={heroList}
+                renderItem={({item}) => <CharacterPanel character={item}/>}
+                keyExtractor={(item) => '' + item.id}
+                numColumns={2}
+                onEndReachedThreshold={0.2}
+                onEndReached={() => this.fetchNextCharacterBatch()}
+              />
+            )}
+          </View>
+        </ComicPanel>
+      </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  btnRow: {
-    flexDirection: "row", 
-    marginHorizontal: 4, 
-    marginVertical: 6,
-  },
-  btnLeft: {
+  heroesContainer: {
     flex: 1,
-    marginRight: 4,
+    marginTop: -8,
   },
-  btnRight: {
-    flex: 2,
-    marginLeft: 4,
+  image: {
+    position: "absolute",
+    height: "100%",
+    right: 0,
+  },
+  favoriteBar: {
+    height: 56,
+    paddingHorizontal: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  input: {
+
   }
 });
 
