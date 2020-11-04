@@ -12,7 +12,7 @@ const baseDelay = 300;
 function OnboardingIntro(props: {onNextPress: () => void}) {  
   const timeLabel = customTimeString(new Date());
   return (
-    <Animatable.View animation="flipInAnim" style={[styles.container]}>
+    <Animatable.View style={[styles.container]}>
     <ComicPanel style={{flex: 3}} color="#94d315" backgroundImage={require("../../assets/imgs/bluredCityBkg.jpeg")}>
       <ComicPanel color="#ffffff" style={{padding: 8, width: 158, alignItems: "center"}}>
         <Text>{I18n.t('onboardingPlace')} {timeLabel}.</Text>
@@ -54,6 +54,7 @@ function OnboardingIntro(props: {onNextPress: () => void}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "white"
   },
   row: {
     flexDirection: "row",

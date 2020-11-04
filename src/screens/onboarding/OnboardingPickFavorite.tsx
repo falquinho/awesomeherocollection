@@ -16,13 +16,13 @@ function OnboardingPickFavorite(props: Props) {
   const [favoriteId, setFavoriteId] = useState(-1);
 
   useEffect(() => {
-    marvelApi.characters()
-    .then(res => {
-      console.log("Heroes: ", res);
-    })
-    .catch(err => {
-      console.log("Error fetching heroes: ", err.response.data);
-    });
+    // marvelApi.characters()
+    // .then(res => {
+    //   console.log("Heroes: ", res);
+    // })
+    // .catch(err => {
+    //   console.log("Error fetching heroes: ", err.response.data);
+    // });
   });
 
   return (

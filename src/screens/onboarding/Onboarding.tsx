@@ -2,7 +2,8 @@ import React from 'react';
 import { NavigationProp } from '@react-navigation/native';
 import OnboardingIntro from './OnboardingIntro';
 import OnboardingPickFavorite from './OnboardingPickFavorite';
-import { Alert } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 
 interface Props {
   navigation: NavigationProp<any>,
@@ -47,8 +48,25 @@ class OnboardingScreen extends React.Component<Props, State> {
 
   render() {
     const { pageIndex } = this.state;
-    return this.pages[pageIndex];
+    return <>
+      <Animatable.View style={{flex: 1}} animation="flipIn">
+        {this.pages[1]}
+      </Animatable.View>
+      <Animatable.View style={[styles.previousContainer]} animation="flipOut">
+        {this.pages[0]}
+      </Animatable.View>
+    </>;
   }
 }
+
+const styles = StyleSheet.create({
+  previousContainer: {
+    position: "absolute", 
+    width: "100%",
+    height: "100%",
+    top: 0,
+    left: 0
+  }
+});
 
 export default OnboardingScreen;
