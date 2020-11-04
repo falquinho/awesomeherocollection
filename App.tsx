@@ -6,7 +6,7 @@ import ComixCollectionScreen from './src/screens/comix-collection/comix-collecti
 import AppTheme from './theme';
 import { ThemeProvider } from 'react-native-elements';
 import * as Animatable from 'react-native-animatable';
-import { flipIn, flipOut } from './src/utils/animations';
+import { flipIn, flipOut, flipInReverse, flipOutReverse } from './src/utils/animations';
 
 declare const global: {
   HermesInternal: null | {},
@@ -15,6 +15,8 @@ declare const global: {
 Animatable.initializeRegistryWithDefinitions({
   flipIn,
   flipOut,
+  flipInReverse,
+  flipOutReverse,
 });
 
 const Stack = createStackNavigator();

@@ -6,10 +6,20 @@ import * as Animatable from 'react-native-animatable';
 
 export const flipOut: Animatable.CustomAnimation = {
     from: { transform: [{rotateY: "0deg"}], translateX: 0, scaleY: 1.0, opacity: 1 },
-    to: { transform: [{rotateY: "-60deg"}], translateX: -300, scaleY: 1.1, opacity: 0 },
+    to: { transform: [{rotateY: "-60deg"}], translateX: -300, scaleY: 1.2, opacity: 0 },
 }
 
 export const flipIn: Animatable.CustomAnimation = {
     from: {transform: [{rotateY: "60deg"}], translateX: -200, scaleY: 0.8, opacity: 0 },
     to: {transform: [{rotateY: "0deg"}], translateX: 0, scaleY: 1.0, opacity: 1 },
+}
+
+export const flipOutReverse: Animatable.CustomAnimation = {
+    from: { transform: [{rotateY: "-60deg"}], translateX: -300, scaleY: 1.2, opacity: 1 },
+    to: { transform: [{rotateY: "0deg"}], translateX: 0, scaleY: 1.0, opacity: 1 },
+}
+
+export const flipInReverse: Animatable.CustomAnimation = {
+    from: {transform: [{rotateY: "0deg"}], translateX: 0, scaleY: 1.0, opacity: 1 },
+    to: {transform: [{rotateY: "60deg"}], translateX: -200, scaleY: 0.8, opacity: 0 },
 }

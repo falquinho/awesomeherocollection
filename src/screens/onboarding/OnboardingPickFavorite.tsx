@@ -26,7 +26,7 @@ function OnboardingPickFavorite(props: Props) {
   });
 
   return (
-  <SafeAreaView style={{flex: 1}}>
+  <SafeAreaView style={{flex: 1, backgroundColor: "white"}}>
     <ComicPanel style={{flex: 1}} color="#d6c64d">
     <Animatable.Image 
       source={require("../../assets/imgs/heroinBust.png")} 
