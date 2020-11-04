@@ -8,6 +8,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 export default function CharacterPanel(props: {apiCharacter: ApiCharacter}): ReactElement {
   const { name, thumbnail } = props.apiCharacter;
+  return <Text>hmmmmm</Text>
   return (
     <ComicPanel style={styles.panel}>
       <Image style={styles.image} source={{uri: `${thumbnail.path}/landscape_xlarge.${thumbnail.extension}`}}/>

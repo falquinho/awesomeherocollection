@@ -5,7 +5,7 @@ const pt: ITranslation = {
     onboardingWelcome: "Olá, bem-vindo ao Amazing Hero Collection.",
     onboardingExplanation: "Aqui é o melhor lugar para ver as aventuras do seu herói favorito.",
     onboardingHideout: "Você também pode saber por onde anda seu herói favorito, basta acessar a aba Esconderijos.",
-    onboardingAskFavorite: "Agora me diz, qual seu herói favorito?",
+    onboardingAskFavorite: "Mas primeiro você tem que me dizer qual seu herói favorito.",
     onboardingMyFavorite: "Meu herói favorito é...",
     next: "Próximo",
     back: "Voltar",
