@@ -11,7 +11,6 @@ function MagazineItem(props: {comic: ApiComic}): ReactElement {
     return (
         <Animatable.View style={styles.container} animation="zoomIn" duration={300}>
             <Image style={[GlobalStyles.absoluteFill, {resizeMode: "cover"}]} source={{uri: generateComicThumbnailUri(comic.thumbnail)}}/>
-            <Text style={styles.titleLabel}>{comic.title}</Text>
         </Animatable.View>
     )
 }
@@ -28,11 +27,6 @@ const styles = StyleSheet.create({
         elevation: 6,
         backgroundColor: "white",
     },
-    titleLabel: {
-        margin: 8,
-        color: "white",
-        fontSize: 16,
-    }
 })
 
 export default MagazineItem;
