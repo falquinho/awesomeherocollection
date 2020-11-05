@@ -3,10 +3,12 @@ import { NavigationProp } from '@react-navigation/native';
 import OnboardingIntro from './OnboardingIntro';
 import OnboardingPickFavorite from './OnboardingPickFavorite';
 import { Alert, SafeAreaView, View, StyleSheet } from 'react-native';
-import { Button, Icon } from 'react-native-elements';
+import { Button, Icon, Text } from 'react-native-elements';
 import I18n from '../../../I18n';
 import RNBootSplash from "react-native-bootsplash";
 import * as Animatable from 'react-native-animatable';
+import ComicPanel from '../../components/ComicPanel';
+import { ApiCharacter } from '../../interfaces/ApiCharacter';
 
 interface Props {
   navigation: NavigationProp<any>,
@@ -16,22 +18,15 @@ interface State {
   currPageIndex: number,
   currPage: ReactElement | undefined,
   prevPage: ReactElement | undefined,
-  favoriteHero: string,
+  favoriteHero: ApiCharacter | undefined,
   animationPlaying: boolean,
 }
 
 class OnboardingScreen extends React.Component<Props, State> {
   private pages = [
     <OnboardingIntro/>,
-    <OnboardingPickFavorite/>,
-    <OnboardingIntro/>,
-    <OnboardingPickFavorite/>,
-    <OnboardingIntro/>,
-    <OnboardingPickFavorite/>,
+    <OnboardingPickFavorite onChangeFavoriteHero={(hero) => this.setState({ favoriteHero: hero })}/>,
   ]
-
-  private currAnimatableRef: any;
-  private prevAnimatableRef: any;
 
   constructor(props: Props) {
     super(props);
@@ -39,7 +34,7 @@ class OnboardingScreen extends React.Component<Props, State> {
       currPageIndex: 0,
       currPage: this.pages[0],
       prevPage: undefined,
-      favoriteHero: "",
+      favoriteHero: undefined,
       animationPlaying: false,
     }
   }
@@ -48,11 +43,6 @@ class OnboardingScreen extends React.Component<Props, State> {
     const { navigation } = this.props;
     navigation.setOptions({ header: () => null });
     RNBootSplash.hide({ duration: 250 });
-  }
-
-  componentDidUpdate(_: any, prevState: State) {
-    if(prevState.pageIndex != this.state.pageIndex)
-      this.setState({ animationPlaying: true });
   }
 
   /**
@@ -69,27 +59,24 @@ class OnboardingScreen extends React.Component<Props, State> {
       prevPage: this.state.currPage,
       currPage: this.pages[newIndex],
     });
-    if(newIndex < currPageIndex) {
-      this.prevAnimatableRef?.flipInReverse(500);
-      this.currAnimatableRef?.flipOutReverse(500);
-    } else {
-      this.prevAnimatableRef?.flipOut(500);
-      this.currAnimatableRef?.flipIn(500);
-    }
   }
 
-  completeOnboarding() {
-    Alert.alert("Onboarding Done!", "Save favorite hero and redirect.");
+  canLeaveOnboarding() {
+    const { favoriteHero } = this.state;
+    return !!favoriteHero;
+  }
+
+  onOnboardingComplete() {
+    Alert.alert("onboarding done!", "save data and go to main screen.");
   }
 
   render() {
     const { 
-      pageIndex, 
-      favoriteHero,
+      currPageIndex, 
       animationPlaying,
     } = this.state;
-    const currentPage = this.pages[pageIndex];
-    const prevPage = this.pages[pageIndex - 1];
+    const currentPage = this.pages[currPageIndex];
+    const prevPage = this.pages[currPageIndex - 1];
     return (
       <SafeAreaView style={{flex: 1}}>
         <View style={{flex: 1}}>
@@ -103,29 +90,37 @@ class OnboardingScreen extends React.Component<Props, State> {
             </Animatable.View>
           )}
         </View>
-        <View style={styles.controls}>
-          {pageIndex > 0 && <Button 
-            containerStyle={[{flex: 1}]} 
-            title={I18n.t("back")}
-            icon={<Icon name="arrow-back"/>} 
-            onPress={() => this.changePage(-1)}
-          />}
-          {pageIndex > 0 && <View style={{width: 8}}/>}
-          {pageIndex < this.pages.length -1 && <Button 
-            containerStyle={[{flex: 1}]} 
-            title={I18n.t("next")}
-            icon={<Icon name="arrow-forward"/>}
-            iconRight
-            onPress={() => this.changePage(1)}
-          />}
-          {pageIndex == this.pages.length -1 && <Button 
-            containerStyle={[{flex: 1}]} 
-            title={I18n.t("letsGo")}
-            icon={<Icon name="done"/>}
-            iconRight
-            disabled={!favoriteHero}
-          />}
-        </View>
+        <Animatable.View animation="fadeIn" duration={300}>
+          <ComicPanel style={styles.controls}>
+            <Button 
+              title={I18n.t("back")}
+              icon={{name: "arrow-back"}}
+              onPress={() => this.changePage(-1)}
+              disabled={currPageIndex == 0}
+              type="clear"
+            />
+
+            <Text style={{fontSize: 18}}>
+              {currPageIndex + 1}/{this.pages.length}
+            </Text>
+
+            {currPageIndex < this.pages.length -1 && <Button 
+              title={I18n.t("next")}
+              icon={{name: "arrow-forward"}}
+              iconRight
+              onPress={() => this.changePage(1)}
+              type="clear"
+            />}
+            {currPageIndex == this.pages.length -1 && <Button 
+              title={I18n.t("letsGo")}
+              icon={{name: "done"}}
+              iconRight
+              disabled={!this.canLeaveOnboarding()}
+              type="clear"
+              onPress={() => this.onOnboardingComplete()}
+            />}
+          </ComicPanel>
+        </Animatable.View>
       </SafeAreaView>
     )
   }
@@ -133,10 +128,12 @@ class OnboardingScreen extends React.Component<Props, State> {
 
 const styles = StyleSheet.create({
   controls: { 
-    flexDirection: "row",
-    marginVertical: 6,
-    marginHorizontal: 6,
-  }
+    height: 56, 
+    paddingHorizontal: 8, 
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    alignItems: "center",
+  },
 })
 
 export default OnboardingScreen;

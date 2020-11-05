@@ -9,5 +9,9 @@ export default StyleSheet.create({
     row: {
         flex: 1,
         flexDirection: "row",
+    },
+    reactiveSquare: {
+        flex: 1,
+        aspectRatio: 1,
     }
 })

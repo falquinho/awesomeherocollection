@@ -1,24 +1,31 @@
 import React from 'react';
-import { SafeAreaView, View, StyleSheet, FlatList, TextInput } from 'react-native';
-import { Button, Text, Icon } from 'react-native-elements';
+import { SafeAreaView, View, StyleSheet, FlatList, TextInput, TouchableOpacity } from 'react-native';
+import { Text, Icon, Image } from 'react-native-elements';
 import * as Animatable from 'react-native-animatable';
 import ComicPanel from '../../components/ComicPanel';
 import I18n from '../../../I18n';
-import marvelApi from '../../utils/marvelApi';
-import LoadingIndicator from '../../components/LoadingIndicator';
-import CharacterPanel from './CharacterPanel';
+import marvelApi, { generateThumbnailLink } from '../../utils/marvelApi';
+import { retrieveStoredCharacters, storeCharacterArray } from '../../utils/characterArrayStorage';
 import { ApiCharacter } from '../../interfaces/ApiCharacter';
 import SpeechBubble from '../../components/SpeechBubble';
 import debounce from 'lodash/debounce';
+import { CharacterPanel } from '../../components/CharacterPanel';
+import LoadingIndicator from '../../components/LoadingIndicator';
+import GlobalStyles from '../../../styles';
 
 interface Props {
+  onChangeFavoriteHero?: (hero: ApiCharacter) => void,
 }
 
 interface State {
-  heroList: ApiCharacter[],
+  heroList: Array<ApiCharacter>,
+  favoriteHero: ApiCharacter | undefined,
+  loadMsg: string,
+  totalCharactes: number,
   selectedHero: number,
   searchMode: boolean,
   searchString: string,
+  searchRes: Array<ApiCharacter>,
 }
 
 class OnboardingPickFavorite extends React.Component<Props, State> {
@@ -26,38 +33,100 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
     super(props);
     this.state = {
       heroList: [],
+      favoriteHero: undefined,
+      loadMsg: "",
+      totalCharactes: 2**30,
       selectedHero: -1,
       searchMode: false,
       searchString: "",
+      searchRes: [],
     }
   }
 
-  componentDidMount() {
-    // marvelApi.characters()
-    // .then(res => {
-    //   console.log("Heroes fetched!");
-    //   this.setState({heroList: res.data.data.results});
-    // })
-    // .catch(err => {
-    //   console.log("Error fetching heroes: ", err.response.data);
-    // });
+  async componentDidMount() {
+    let characters = await retrieveStoredCharacters();
+    if(characters.length) {
+      console.log("Character array recovered from storage.");
+      return this.setState({ heroList: characters });
+    }
+    this.fetchNextCharacterBatch()
+  }
+
+  /** 
+   * Fetch the next page of Characters from the API. Does not act if already have all resources.
+   * Also does not act if on search mode.
+   * */
+  fetchNextCharacterBatch() {
+    const { heroList, totalCharactes, searchMode } = this.state;
+    if(heroList.length >= totalCharactes || searchMode )
+      return;
+    this.setState({ loadMsg: I18n.t("retrievingHeroes") });
+    marvelApi.characters(heroList.length)
+    .then(res => {
+      const { heroList } = this.state;
+      this.setState({ 
+        heroList: heroList.concat(res.data.data.results),
+        totalCharactes: res.data.data.total,
+        loadMsg: "",
+      });
+      storeCharacterArray(heroList.concat(res.data.data.results)).catch(console.error);
+    })
+    .catch(err => {
+      console.log("Error fetching heroes: ", err.response.data);
+      this.setState({ loadMsg: "" });
+    })
+  }
+
+  toggleSearchMode() {
+    this.setState({
+      searchMode: !this.state.searchMode,
+      searchRes: [],
+      searchString: "",
+    })
   }
 
   debouncedHeroSearch = debounce(() => {
-    console.log("Debounced Hero Search: ", this.state.searchString);
+    const { searchString } = this.state;
+    if(searchString.length < 4)
+      return;
+    this.setState({loadMsg: I18n.t("fetchingHeroes")});
+    marvelApi.searchCharacter(searchString.trim())
+    .then(res => {
+      console.log("Search res: ", res.data);
+      this.setState({
+        searchRes: res.data.data.results,
+        loadMsg: "",
+      })
+    })
+    .catch(err => {
+      console.log("Error searching character: ", err.response, err.data);
+      this.setState({ loadMsg: "" });
+    })
   }, 400);
+
+  handleHeroPick(hero: ApiCharacter) {
+    const { onChangeFavoriteHero } = this.props;
+    this.setState({ 
+      favoriteHero: hero,
+      searchMode: false,
+      searchRes: [],
+      searchString: "",
+    }, () => onChangeFavoriteHero?.(hero));
+  }
 
   render() {
     const { 
       heroList, 
-      searchString, 
-      searchMode
+      searchMode,
+      searchRes,
+      loadMsg,
+      favoriteHero,
     } = this.state;
     return (
       <SafeAreaView style={{flex: 1}}>
         <ComicPanel style={{flex: 1}} color="#d6c64d">
           <Animatable.Image
-            style={styles.image}
+            style={styles.bustImage}
             source={require("../../assets/imgs/heroinBust.png")} 
             animation="fadeIn"
           />
@@ -70,8 +139,16 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
 
         {!searchMode && (
           <ComicPanel style={styles.favoriteBar}>
-            <Text>{I18n.t("onboardingMyFavorite")}</Text>
-            <Icon name="search" onPress={() => this.setState({searchMode: true, searchString: ""})}/>
+            <View style={{flex: 1}}>
+              <Text 
+                style={{fontSize: 16}}
+                numberOfLines={1}
+                ellipsizeMode="head">
+                {I18n.t("onboardingMyFavorite")}{favoriteHero != undefined && <Text> {favoriteHero.name}</Text>}
+              </Text>
+            </View>
+            {favoriteHero == undefined && <Icon name="search" onPress={() => this.toggleSearchMode()}/>}
+            {favoriteHero != undefined && <Icon name="close" onPress={() => this.setState({favoriteHero: undefined})}/>}
           </ComicPanel>
         )}
 
@@ -81,26 +158,48 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
               style={{flex: 1}}
               autoFocus
               maxLength={32}
-              returnKeyType="search"
               onChangeText={text => {
                 this.setState({ searchString: text });
                 this.debouncedHeroSearch();
               }}
             />
-            <Icon name="close" onPress={() => this.setState({searchMode: false, searchString: ""})}/>
+            <Icon name="close" onPress={() => this.toggleSearchMode()}/>
           </ComicPanel>
         )}
 
         <ComicPanel style={{flex: 3}} color="#35185e">
           <View style={styles.heroesContainer}>
-            {/* {!heroList.length && <LoadingIndicator message={I18n.t("fetchingHeroes")}/>}
-            {heroList.length && (
+            {heroList.length > 0 && (
               <FlatList
-                data={heroList}
-                renderItem={({ item }) => <CharacterPanel apiCharacter={item}/>}
+                data={searchMode? searchRes : heroList}
+                renderItem={({item}) => (
+                  <TouchableOpacity 
+                    style={GlobalStyles.reactiveSquare} 
+                    activeOpacity={0.6}
+                    onPress={() => this.handleHeroPick(item)} 
+                  >
+                    <CharacterPanel character={item}/>
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item) => '' + item.id}
+                numColumns={2}
+                columnWrapperStyle={{flex: 1}}
+                onEndReachedThreshold={0.1}
+                onEndReached={() => this.fetchNextCharacterBatch()}
+                ListHeaderComponent={<View style={{height: 16}}/>}
+                ListFooterComponent={loadMsg != ""? <LoadingIndicator message={loadMsg}/> : null}
               />
-            )} */}
+            )}
           </View>
+
+          {favoriteHero != undefined && (
+            <Animatable.Image
+              animation="zoomIn"
+              duration={200}
+              style={styles.favoritePic} source={{uri: generateThumbnailLink(favoriteHero.thumbnail)}}
+            />
+          )}
+
         </ComicPanel>
       </SafeAreaView>
     );
@@ -112,7 +211,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: -8,
   },
-  image: {
+  bustImage: {
     position: "absolute",
     height: "100%",
     right: 0,
@@ -124,8 +223,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  input: {
-
+  favoritePic: {
+    position: "absolute",
+    resizeMode: "cover",
+    width: "100%",
+    height: "100%",
   }
 });
 
