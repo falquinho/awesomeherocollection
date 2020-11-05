@@ -10,6 +10,7 @@ import { ApiCharacter } from '../../interfaces/ApiCharacter';
 import SpeechBubble from '../../components/SpeechBubble';
 import debounce from 'lodash/debounce';
 import { CharacterPanel } from '../../components/CharacterPanel';
+import LoadingIndicator from '../../components/LoadingIndicator';
 
 interface Props {
 }
@@ -22,6 +23,7 @@ interface State {
   selectedHero: number,
   searchMode: boolean,
   searchString: string,
+  searchRes: Array<ApiCharacter>,
 }
 
 class OnboardingPickFavorite extends React.Component<Props, State> {
@@ -35,6 +37,7 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
       selectedHero: -1,
       searchMode: false,
       searchString: "",
+      searchRes: [],
     }
   }
 
@@ -47,10 +50,13 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
     this.fetchNextCharacterBatch()
   }
 
-  /** Fetch the next page of Characters from the API. Does not act if already have all resources.*/
+  /** 
+   * Fetch the next page of Characters from the API. Does not act if already have all resources.
+   * Also does not act if on search mode.
+   * */
   fetchNextCharacterBatch() {
-    const { heroList, totalCharactes } = this.state;
-    if(heroList.length >= totalCharactes )
+    const { heroList, totalCharactes, searchMode } = this.state;
+    if(heroList.length >= totalCharactes || searchMode )
       return;
     this.setState({ loadMsg: "Buscando Heróis..." });
     marvelApi.characters(heroList.length)
@@ -61,7 +67,7 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
         totalCharactes: res.data.data.total,
         loadMsg: "",
       });
-      storeCharacterArray(heroList.concat(res.data.data.results));
+      storeCharacterArray(heroList.concat(res.data.data.results)).catch(console.error);
     })
     .catch(err => {
       console.log("Error fetching heroes: ", err.response.data);
@@ -69,15 +75,39 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
     })
   }
 
+  toggleSearchMode() {
+    this.setState({
+      searchMode: !this.state.searchMode,
+      searchRes: [],
+      searchString: "",
+    })
+  }
+
   debouncedHeroSearch = debounce(() => {
-    console.log("Debounced Hero Search: ", this.state.searchString);
+    const { searchString } = this.state;
+    if(searchString.length < 4)
+      return;
+    this.setState({loadMsg: "Buscando personagem..."});
+    marvelApi.searchCharacter(searchString.trim())
+    .then(res => {
+      console.log("Search res: ", res.data);
+      this.setState({
+        searchRes: res.data.data.results,
+        loadMsg: "",
+      })
+    })
+    .catch(err => {
+      console.log("Error searching character: ", err.response, err.data);
+      this.setState({ loadMsg: "" });
+    })
   }, 400);
 
   render() {
     const { 
       heroList, 
-      searchString, 
-      searchMode
+      searchMode,
+      searchRes,
+      loadMsg,
     } = this.state;
     return (
       <SafeAreaView style={{flex: 1}}>
@@ -97,7 +127,7 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
         {!searchMode && (
           <ComicPanel style={styles.favoriteBar}>
             <Text>{I18n.t("onboardingMyFavorite")}</Text>
-            <Icon name="search" onPress={() => this.setState({searchMode: true, searchString: ""})}/>
+            <Icon name="search" onPress={() => this.toggleSearchMode()}/>
           </ComicPanel>
         )}
 
@@ -107,13 +137,12 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
               style={{flex: 1}}
               autoFocus
               maxLength={32}
-              returnKeyType="search"
               onChangeText={text => {
                 this.setState({ searchString: text });
                 this.debouncedHeroSearch();
               }}
             />
-            <Icon name="close" onPress={() => this.setState({searchMode: false, searchString: ""})}/>
+            <Icon name="close" onPress={() => this.toggleSearchMode()}/>
           </ComicPanel>
         )}
 
@@ -121,12 +150,13 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
           <View style={styles.heroesContainer}>
             {heroList.length > 0 && (
               <FlatList
-                data={heroList}
+                data={searchMode? searchRes : heroList}
                 renderItem={({item}) => <CharacterPanel character={item}/>}
                 keyExtractor={(item) => '' + item.id}
                 numColumns={2}
-                onEndReachedThreshold={0.2}
+                onEndReachedThreshold={0.1}
                 onEndReached={() => this.fetchNextCharacterBatch()}
+                ListFooterComponent={<LoadingIndicator message={loadMsg}/>}
               />
             )}
           </View>
