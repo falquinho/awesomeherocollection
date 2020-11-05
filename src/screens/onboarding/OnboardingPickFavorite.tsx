@@ -58,7 +58,7 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
     const { heroList, totalCharactes, searchMode } = this.state;
     if(heroList.length >= totalCharactes || searchMode )
       return;
-    this.setState({ loadMsg: "Buscando Heróis..." });
+    this.setState({ loadMsg: I18n.t("retrievingHeroes") });
     marvelApi.characters(heroList.length)
     .then(res => {
       const { heroList } = this.state;
@@ -87,7 +87,7 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
     const { searchString } = this.state;
     if(searchString.length < 4)
       return;
-    this.setState({loadMsg: "Buscando personagem..."});
+    this.setState({loadMsg: I18n.t("fetchingHeroes")});
     marvelApi.searchCharacter(searchString.trim())
     .then(res => {
       console.log("Search res: ", res.data);
@@ -154,9 +154,11 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
                 renderItem={({item}) => <CharacterPanel character={item}/>}
                 keyExtractor={(item) => '' + item.id}
                 numColumns={2}
+                columnWrapperStyle={{flex: 1}}
                 onEndReachedThreshold={0.1}
                 onEndReached={() => this.fetchNextCharacterBatch()}
-                ListFooterComponent={<LoadingIndicator message={loadMsg}/>}
+                ListHeaderComponent={<View style={{height: 16}}/>}
+                ListFooterComponent={loadMsg != ""? <LoadingIndicator message={loadMsg}/> : null}
               />
             )}
           </View>

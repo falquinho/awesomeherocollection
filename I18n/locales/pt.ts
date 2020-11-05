@@ -10,7 +10,8 @@ const pt: ITranslation = {
     next: "Próximo",
     back: "Voltar",
     letsGo: "Vamos lá!",
-    fetchingHeroes: "Buscando Heróis..."
+    fetchingHeroes: "Buscando Heróis...",
+    retrievingHeroes: "Recuperando Heróis..."
 } 
 
 export default pt;  
