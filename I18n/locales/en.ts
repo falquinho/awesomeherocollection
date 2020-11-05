@@ -12,7 +12,17 @@ const en: ITranslation = {
     letsGo: "Let's go!",
     fetchingHeroes: "Fetching Heroes...",
     retrievingHeroes: "Retrieving Heroes...",
-    retrievingComics: "Retrieving Comics..."
+    retrievingComics: "Retrieving Comics...",
+    title: "Title",
+    http0: "Check Your Connection",
+    http400: "Bad Request",
+    http401: "Unauthorized",
+    http403: "Forbidden",
+    http404: "Not Found",
+    http500: "Internal Server Error",
+    http501: "Not Implemented",
+    http502: "Bad Gateway",
+    retry: "Retry",
 } 
 
 export default en;

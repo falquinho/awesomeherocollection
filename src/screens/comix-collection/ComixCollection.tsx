@@ -1,16 +1,18 @@
 import React from 'react';
 import { NavigationProp, RouteProp } from '@react-navigation/native';
-import { SafeAreaView, StyleSheet, FlatList, View, Image, TouchableOpacity, Modal } from 'react-native';
+import { SafeAreaView, StyleSheet, FlatList, View, TouchableOpacity, Modal } from 'react-native';
 import ComicPanel from '../../components/ComicPanel';
 import { ApiCharacter } from '../../interfaces/ApiCharacter';
-import { Icon, Text, BottomSheet, ListItem, Avatar } from 'react-native-elements';
+import { Icon, Text, ListItem, Avatar } from 'react-native-elements';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import I18n from '../../../I18n';
 import { ApiComic } from '../../interfaces/ApiComic';
-import marvelApi, { generateComicThumbnailUri } from '../../utils/marvelApi';
+import marvelApi from '../../utils/marvelApi';
 import MagazineItem from '../../components/MagazineItem';
 import * as Animatable from 'react-native-animatable';
 import MergeComicsStrategies, { MergeComicsFunction } from '../../utils/mergeComicsStrategies';
+import Snackbar from 'react-native-snackbar';
+import HttpErrorMessages from '../../utils/httpErrorMessages';
 
 interface RouteParams {
   favoriteHero: ApiCharacter | undefined,
@@ -92,7 +94,11 @@ class ComixCollectionScreen extends React.Component<Props, State> {
     })
     .catch(err => {
       console.warn("Error handling List End: ", err);
-      this.setState({ fetching: false })
+      this.setState({ fetching: false });
+      Snackbar.show({
+        text: HttpErrorMessages[err.status ?? 0],
+        action: { text: I18n.t("retry"), onPress: () => this.handleFlastListEndReached() },
+      });
     })
   }
 
@@ -108,7 +114,11 @@ class ComixCollectionScreen extends React.Component<Props, State> {
       .then(res => this.setState({ refreshing: false }))
       .catch(err => {
         console.warn("Error refreshing: ", err);
-        this.setState({ refreshing: false })
+        this.setState({ refreshing: false });
+        Snackbar.show({
+          text: HttpErrorMessages[err.status ?? 0],
+          action: { text: I18n.t("retry"), onPress: () => this.handleRefresh() },
+        });
       })
     });
   }
@@ -160,7 +170,7 @@ class ComixCollectionScreen extends React.Component<Props, State> {
                   <ListItem>
                     <Avatar></Avatar>
                     <ListItem.Content>
-                      <ListItem.Subtitle>Título</ListItem.Subtitle>
+                      <ListItem.Subtitle>{I18n.t("title")}</ListItem.Subtitle>
                       <ListItem.Title>{focusedComic.title}</ListItem.Title>
                     </ListItem.Content>
                   </ListItem>

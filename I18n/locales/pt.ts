@@ -13,6 +13,16 @@ const pt: ITranslation = {
     fetchingHeroes: "Buscando Heróis...",
     retrievingHeroes: "Recuperando Heróis...",
     retrievingComics: "Recuperando Quadrinhos...",
+    title: "Título",
+    http0: "Verifique sua Conexão",
+    http400: "Requisição incorreta",
+    http401: "Não Autorizado",
+    http403: "Proibido",
+    http404: "Não Encontrado",
+    http500: "Erro Interno do Servidor",
+    http501: "Não Implementado",
+    http502: "Gateway Ruim",
+    retry: "Retentar",
 } 
 
 export default pt;  
