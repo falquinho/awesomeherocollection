@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { NavigationProp } from '@react-navigation/native';
 import OnboardingIntro from './OnboardingIntro';
 import OnboardingPickFavorite from './OnboardingPickFavorite';
@@ -13,7 +13,9 @@ interface Props {
 }
 
 interface State {
-  pageIndex: number,
+  currPageIndex: number,
+  currPage: ReactElement | undefined,
+  prevPage: ReactElement | undefined,
   favoriteHero: string,
   animationPlaying: boolean,
 }
@@ -28,10 +30,15 @@ class OnboardingScreen extends React.Component<Props, State> {
     <OnboardingPickFavorite/>,
   ]
 
+  private currAnimatableRef: any;
+  private prevAnimatableRef: any;
+
   constructor(props: Props) {
     super(props);
     this.state = {
-      pageIndex: 0,
+      currPageIndex: 0,
+      currPage: this.pages[0],
+      prevPage: undefined,
       favoriteHero: "",
       animationPlaying: false,
     }
@@ -53,8 +60,22 @@ class OnboardingScreen extends React.Component<Props, State> {
    * @param step How many pages to change. Can be a negative number.
    */
   changePage(step: number) {
-    const { pageIndex } = this.state;
-    this.setState({ pageIndex: Math.max(0, Math.min(pageIndex + step, this.pages.length - 1)) });
+    const { currPageIndex } = this.state;
+    const newIndex = Math.max(0, Math.min(currPageIndex + step, this.pages.length - 1));
+    if(newIndex == currPageIndex)
+      return;
+    this.setState({ 
+      currPageIndex: newIndex,
+      prevPage: this.state.currPage,
+      currPage: this.pages[newIndex],
+    });
+    if(newIndex < currPageIndex) {
+      this.prevAnimatableRef?.flipInReverse(500);
+      this.currAnimatableRef?.flipOutReverse(500);
+    } else {
+      this.prevAnimatableRef?.flipOut(500);
+      this.currAnimatableRef?.flipIn(500);
+    }
   }
 
   completeOnboarding() {

@@ -41,6 +41,7 @@ function OnboardingIntro() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "white"
   },
   row: {
     flexDirection: "row",
