@@ -3,9 +3,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ComixCollectionScreen from '../comixCollection/ComixCollection';
 import MapScreen from '../map/Map';
 import { useRoute, useNavigation, NavigationProp, RouteProp } from '@react-navigation/native';
-import GlobalStyles from '../../../styles';
+import { StyleSheet } from 'react-native';
+import { Icon } from 'react-native-elements';
 
 const Tab = createBottomTabNavigator();
+
+const tabBarIconComics = ({color, size}: any) => <Icon type="material-community" name="book-open-page-variant" color={color} size={size}/>
+
+const tabBarIconMap = ({color, size}: any) => <Icon type="material-community" name="map-marker" color={color} size={size}/>
 
 function HeroHomeScreen(): ReactElement {
   const route: RouteProp<any, any> = useRoute();
@@ -17,11 +22,19 @@ function HeroHomeScreen(): ReactElement {
   });
 
   return (
-    <Tab.Navigator>
-      <Tab.Screen component={ComixCollectionScreen} name="comixCollection" options={{title: "Aventuras"}}/>
-      <Tab.Screen component={MapScreen} name="mapScreen" options={{title: "Esconderijos"}}/>
+    <Tab.Navigator tabBarOptions={{ activeTintColor: "#000", labelStyle: styles.label, labelPosition: "beside-icon", style: styles.container}}>
+      <Tab.Screen component={ComixCollectionScreen} name="comixCollection" options={{ title: "Aventuras", tabBarIcon: tabBarIconComics }}/>
+      <Tab.Screen component={MapScreen} name="mapScreen" options={{ title: "Esconderijos", tabBarIcon: tabBarIconMap }}/>
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  label: { fontFamily: "ComicNeue-Bold" },
+  container: { 
+    borderTopColor: "black", 
+    borderTopWidth: 2 
+  },
+})
 
 export default HeroHomeScreen;
