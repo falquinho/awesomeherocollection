@@ -9,7 +9,7 @@ import RNBootSplash from "react-native-bootsplash";
 import * as Animatable from 'react-native-animatable';
 import ComicPanel from '../../components/ComicPanel';
 import { ApiCharacter } from '../../interfaces/ApiCharacter';
-import ComixCollectionScreen from '../comix-collection/ComixCollection';
+import ComixCollectionScreen from '../comixCollection/ComixCollection';
 
 interface Props {
   navigation: NavigationProp<any>,
@@ -41,8 +41,6 @@ class OnboardingScreen extends React.Component<Props, State> {
   }
   
   componentDidMount() {
-    const { navigation } = this.props;
-    navigation.setOptions({ header: () => null });
     RNBootSplash.hide({ duration: 250 });
   }
 
@@ -72,7 +70,10 @@ class OnboardingScreen extends React.Component<Props, State> {
     if(!favoriteHero)
       return;
     const { navigation } = this.props;
-    navigation.navigate("comixCollection", ComixCollectionScreen.RouteParams({ favoriteHero }));
+    navigation.navigate("heroHome", {
+      screen: "comixCollection", 
+      params: ComixCollectionScreen.RouteParams({ favoriteHero }),
+    });
   }
 
   render() {

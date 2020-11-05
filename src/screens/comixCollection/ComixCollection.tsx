@@ -135,38 +135,29 @@ class ComixCollectionScreen extends React.Component<Props, State> {
     } = this.state;
     return (
       <SafeAreaView style={{flex: 1}}>
-        <ComicPanel style={styles.toolbar}>
-          <Icon name="arrow-back" onPress={() => this.goBack()}/>
-          <Text style={styles.title}>{favoriteHero?.name ?? ""}</Text>
-        </ComicPanel>
-        
-        <ComicPanel style={{flex: 1}} color="#561b2b">
-          <FlatList
-            data={comics}
-            extraData={(item: ApiComic) => '' + item.id}
-            renderItem={({item}) => (
-              <TouchableOpacity style={{flex: 1}} activeOpacity={0.6} onPress={() => this.setState({ focusedComic: item })}>
-                <MagazineItem comic={item}/>
-              </TouchableOpacity>
-            )}
-            onRefresh={() => this.handleRefresh()}
-            refreshing={refreshing}
-            numColumns={2}
-            columnWrapperStyle={{flex: 1, paddingHorizontal: 4}}
-            onEndReached={() => this.handleFlastListEndReached()}
-            onEndReachedThreshold={0.1}
-            ListHeaderComponent={<View style={{height: 6}}/>}
-            ListFooterComponent={fetching? <LoadingIndicator message={I18n.t("retrievingComics")}/> : <View style={{height: 6}}/>}
-          />
-        </ComicPanel>
+        <FlatList
+          data={comics}
+          extraData={(item: ApiComic) => '' + item.id}
+          renderItem={({item}) => (
+            <TouchableOpacity style={{flex: 1}} activeOpacity={0.6} onPress={() => this.setState({ focusedComic: item })}>
+              <MagazineItem comic={item}/>
+            </TouchableOpacity>
+          )}
+          onRefresh={() => this.handleRefresh()}
+          refreshing={refreshing}
+          numColumns={2}
+          columnWrapperStyle={{flex: 1, paddingHorizontal: 4}}
+          onEndReached={() => this.handleFlastListEndReached()}
+          onEndReachedThreshold={0.1}
+          ListHeaderComponent={<View style={{height: 6}}/>}
+          ListFooterComponent={fetching? <LoadingIndicator color="#000000" message={I18n.t("retrievingComics")}/> : <View style={{height: 6}}/>}
+        />
 
         <Modal visible={focusedComic != undefined} transparent>
           <View style={{ flex: 1, backgroundColor: "#000000aa" }}>
             {focusedComic != undefined && (
-              <Animatable.View style={{ flex: 1, alignSelf: "center" }} animation="zoomInUp" duration={500}>
-                <TouchableWithoutFeedback 
-                  style={{ alignSelf: "center", backgroundColor: "red", height: 32 }}
-                  onPress={() => this.focusedComicAnimatableRef?.spin()}>
+              <Animatable.View style={{ flex: 1, alignSelf: "center", padding: 16 }} animation="zoomInUp" duration={500}>
+                <TouchableWithoutFeedback style={{ alignSelf: "center" }} onPress={() => this.focusedComicAnimatableRef?.spin()}>
                   <Animatable.View ref={ref => this.focusedComicAnimatableRef = ref}>
                     <MagazineItem comic={focusedComic}/>
                   </Animatable.View>
@@ -204,19 +195,5 @@ class ComixCollectionScreen extends React.Component<Props, State> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  toolbar: {
-    height: 56,
-    paddingHorizontal: 8,
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 18,
-    marginLeft: 16,
-  }
-})
 
 export default ComixCollectionScreen;
