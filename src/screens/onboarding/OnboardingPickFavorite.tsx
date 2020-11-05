@@ -1,23 +1,25 @@
 import React from 'react';
-import { SafeAreaView, View, StyleSheet, FlatList, TextInput } from 'react-native';
-import { Text, Icon } from 'react-native-elements';
+import { SafeAreaView, View, StyleSheet, FlatList, TextInput, TouchableOpacity } from 'react-native';
+import { Text, Icon, Image } from 'react-native-elements';
 import * as Animatable from 'react-native-animatable';
 import ComicPanel from '../../components/ComicPanel';
 import I18n from '../../../I18n';
-import marvelApi from '../../utils/marvelApi';
+import marvelApi, { generateThumbnailLink } from '../../utils/marvelApi';
 import { retrieveStoredCharacters, storeCharacterArray } from '../../utils/characterArrayStorage';
 import { ApiCharacter } from '../../interfaces/ApiCharacter';
 import SpeechBubble from '../../components/SpeechBubble';
 import debounce from 'lodash/debounce';
 import { CharacterPanel } from '../../components/CharacterPanel';
 import LoadingIndicator from '../../components/LoadingIndicator';
+import GlobalStyles from '../../../styles';
 
 interface Props {
+  onChangeFavoriteHero?: (hero: ApiCharacter) => void,
 }
 
 interface State {
   heroList: Array<ApiCharacter>,
-  favoriteId: number,
+  favoriteHero: ApiCharacter | undefined,
   loadMsg: string,
   totalCharactes: number,
   selectedHero: number,
@@ -31,7 +33,7 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
     super(props);
     this.state = {
       heroList: [],
-      favoriteId: -1,
+      favoriteHero: undefined,
       loadMsg: "",
       totalCharactes: 2**30,
       selectedHero: -1,
@@ -102,18 +104,29 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
     })
   }, 400);
 
+  handleHeroPick(hero: ApiCharacter) {
+    const { onChangeFavoriteHero } = this.props;
+    this.setState({ 
+      favoriteHero: hero,
+      searchMode: false,
+      searchRes: [],
+      searchString: "",
+    }, () => onChangeFavoriteHero?.(hero));
+  }
+
   render() {
     const { 
       heroList, 
       searchMode,
       searchRes,
       loadMsg,
+      favoriteHero,
     } = this.state;
     return (
       <SafeAreaView style={{flex: 1}}>
         <ComicPanel style={{flex: 1}} color="#d6c64d">
           <Animatable.Image
-            style={styles.image}
+            style={styles.bustImage}
             source={require("../../assets/imgs/heroinBust.png")} 
             animation="fadeIn"
           />
@@ -126,8 +139,16 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
 
         {!searchMode && (
           <ComicPanel style={styles.favoriteBar}>
-            <Text>{I18n.t("onboardingMyFavorite")}</Text>
-            <Icon name="search" onPress={() => this.toggleSearchMode()}/>
+            <View style={{flex: 1}}>
+              <Text 
+                style={{fontSize: 16}}
+                numberOfLines={1}
+                ellipsizeMode="head">
+                {I18n.t("onboardingMyFavorite")}{favoriteHero != undefined && <Text> {favoriteHero.name}</Text>}
+              </Text>
+            </View>
+            {favoriteHero == undefined && <Icon name="search" onPress={() => this.toggleSearchMode()}/>}
+            {favoriteHero != undefined && <Icon name="close" onPress={() => this.setState({favoriteHero: undefined})}/>}
           </ComicPanel>
         )}
 
@@ -151,7 +172,15 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
             {heroList.length > 0 && (
               <FlatList
                 data={searchMode? searchRes : heroList}
-                renderItem={({item}) => <CharacterPanel character={item}/>}
+                renderItem={({item}) => (
+                  <TouchableOpacity 
+                    style={GlobalStyles.reactiveSquare} 
+                    activeOpacity={0.6}
+                    onPress={() => this.handleHeroPick(item)} 
+                  >
+                    <CharacterPanel character={item}/>
+                  </TouchableOpacity>
+                )}
                 keyExtractor={(item) => '' + item.id}
                 numColumns={2}
                 columnWrapperStyle={{flex: 1}}
@@ -162,6 +191,15 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
               />
             )}
           </View>
+
+          {favoriteHero != undefined && (
+            <Animatable.Image
+              animation="zoomIn"
+              duration={200}
+              style={styles.favoritePic} source={{uri: generateThumbnailLink(favoriteHero.thumbnail)}}
+            />
+          )}
+
         </ComicPanel>
       </SafeAreaView>
     );
@@ -173,7 +211,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: -8,
   },
-  image: {
+  bustImage: {
     position: "absolute",
     height: "100%",
     right: 0,
@@ -185,8 +223,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  input: {
-
+  favoritePic: {
+    position: "absolute",
+    resizeMode: "cover",
+    width: "100%",
+    height: "100%",
   }
 });
 

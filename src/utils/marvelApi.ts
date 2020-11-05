@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ApiThumbnail } from '../interfaces/ApiThumbnail';
 const md5: (arg0: string) => string = require('blueimp-md5');
 
 const publicKey = "558ed6347bbea27b6f865ad4d0cb3cb1";
@@ -20,6 +21,10 @@ const marvelApi = {
     characters: (offset?: number): Promise<any> => marvelAxios.get(`/characters${authParams()}${(offset != undefined? `&offset=${offset}` : '')}`),
     searchCharacter: (name: string): Promise<any> => marvelAxios.get(`/characters${authParams()}&limit=40&nameStartsWith=${name}`),
     characterComics: (characterId: number): Promise<any> => marvelAxios.get(`/character/${characterId}/comics${authParams()}`),
+}
+
+export function generateThumbnailLink(thumbnail: ApiThumbnail): string {
+    return `${thumbnail.path}/standard_amazing.${thumbnail.extension}`;
 }
 
 export default marvelApi;

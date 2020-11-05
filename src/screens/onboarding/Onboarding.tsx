@@ -8,6 +8,7 @@ import I18n from '../../../I18n';
 import RNBootSplash from "react-native-bootsplash";
 import * as Animatable from 'react-native-animatable';
 import ComicPanel from '../../components/ComicPanel';
+import { ApiCharacter } from '../../interfaces/ApiCharacter';
 
 interface Props {
   navigation: NavigationProp<any>,
@@ -17,18 +18,15 @@ interface State {
   currPageIndex: number,
   currPage: ReactElement | undefined,
   prevPage: ReactElement | undefined,
-  favoriteHero: string,
+  favoriteHero: ApiCharacter | undefined,
   animationPlaying: boolean,
 }
 
 class OnboardingScreen extends React.Component<Props, State> {
   private pages = [
     <OnboardingIntro/>,
-    <OnboardingPickFavorite/>,
+    <OnboardingPickFavorite onChangeFavoriteHero={(hero) => this.setState({ favoriteHero: hero })}/>,
   ]
-
-  private currAnimatableRef: any;
-  private prevAnimatableRef: any;
 
   constructor(props: Props) {
     super(props);
@@ -36,7 +34,7 @@ class OnboardingScreen extends React.Component<Props, State> {
       currPageIndex: 0,
       currPage: this.pages[0],
       prevPage: undefined,
-      favoriteHero: "",
+      favoriteHero: undefined,
       animationPlaying: false,
     }
   }
@@ -68,14 +66,13 @@ class OnboardingScreen extends React.Component<Props, State> {
     return !!favoriteHero;
   }
 
-  completeOnboarding() {
-    Alert.alert("Onboarding Done!", "Save favorite hero and redirect.");
+  onOnboardingComplete() {
+    Alert.alert("onboarding done!", "save data and go to main screen.");
   }
 
   render() {
     const { 
       currPageIndex, 
-      favoriteHero,
       animationPlaying,
     } = this.state;
     const currentPage = this.pages[currPageIndex];
@@ -94,7 +91,7 @@ class OnboardingScreen extends React.Component<Props, State> {
           )}
         </View>
         <Animatable.View animation="fadeIn" duration={300}>
-          <ComicPanel style={{height: 56, paddingHorizontal: 8, flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+          <ComicPanel style={styles.controls}>
             <Button 
               title={I18n.t("back")}
               icon={{name: "arrow-back"}}
@@ -120,6 +117,7 @@ class OnboardingScreen extends React.Component<Props, State> {
               iconRight
               disabled={!this.canLeaveOnboarding()}
               type="clear"
+              onPress={() => this.onOnboardingComplete()}
             />}
           </ComicPanel>
         </Animatable.View>
@@ -130,13 +128,11 @@ class OnboardingScreen extends React.Component<Props, State> {
 
 const styles = StyleSheet.create({
   controls: { 
-    flexDirection: "row",
-    marginVertical: 6,
-    marginHorizontal: 6,
-  },
-  clearBtn: {
-    borderWidth: 0,
-    backgroundColor: "transparent",
+    height: 56, 
+    paddingHorizontal: 8, 
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    alignItems: "center",
   },
 })
 
