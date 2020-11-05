@@ -14,7 +14,7 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 import GlobalStyles from '../../../styles';
 
 interface Props {
-  onChangeFavoriteHero?: (hero: ApiCharacter) => void,
+  onChangeFavoriteHero?: (hero: ApiCharacter | undefined) => void,
 }
 
 interface State {
@@ -104,7 +104,7 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
     })
   }, 400);
 
-  handleHeroPick(hero: ApiCharacter) {
+  handleHeroChange(hero: ApiCharacter | undefined) {
     const { onChangeFavoriteHero } = this.props;
     this.setState({ 
       favoriteHero: hero,
@@ -148,7 +148,7 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
               </Text>
             </View>
             {favoriteHero == undefined && <Icon name="search" onPress={() => this.toggleSearchMode()}/>}
-            {favoriteHero != undefined && <Icon name="close" onPress={() => this.setState({favoriteHero: undefined})}/>}
+            {favoriteHero != undefined && <Icon name="close" onPress={() => this.handleHeroChange(undefined)}/>}
           </ComicPanel>
         )}
 
@@ -176,7 +176,7 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
                   <TouchableOpacity 
                     style={GlobalStyles.reactiveSquare} 
                     activeOpacity={0.6}
-                    onPress={() => this.handleHeroPick(item)} 
+                    onPress={() => this.handleHeroChange(item)} 
                   >
                     <CharacterPanel character={item}/>
                   </TouchableOpacity>
