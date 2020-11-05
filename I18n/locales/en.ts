@@ -11,7 +11,8 @@ const en: ITranslation = {
     back: "Go Back",
     letsGo: "Let's go!",
     fetchingHeroes: "Fetching Heroes...",
-    retrievingHeroes: "Retrieving Heroes..."
+    retrievingHeroes: "Retrieving Heroes...",
+    retrievingComics: "Retrieving Comics..."
 } 
 
 export default en;

@@ -4,7 +4,7 @@ import { Text, Icon, Image } from 'react-native-elements';
 import * as Animatable from 'react-native-animatable';
 import ComicPanel from '../../components/ComicPanel';
 import I18n from '../../../I18n';
-import marvelApi, { generateThumbnailLink } from '../../utils/marvelApi';
+import marvelApi, { generateCharacterThumbnailUri } from '../../utils/marvelApi';
 import { retrieveStoredCharacters, storeCharacterArray } from '../../utils/characterArrayStorage';
 import { ApiCharacter } from '../../interfaces/ApiCharacter';
 import SpeechBubble from '../../components/SpeechBubble';
@@ -196,7 +196,7 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
             <Animatable.Image
               animation="zoomIn"
               duration={200}
-              style={styles.favoritePic} source={{uri: generateThumbnailLink(favoriteHero.thumbnail)}}
+              style={styles.favoritePic} source={{uri: generateCharacterThumbnailUri(favoriteHero.thumbnail)}}
             />
           )}
 

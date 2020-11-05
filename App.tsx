@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import OnboardingScreen from './src/screens/onboarding/Onboarding';
-import ComixCollectionScreen from './src/screens/comix-collection/comix-collection';
+import ComixCollectionScreen from './src/screens/comix-collection/ComixCollection';
 import AppTheme from './theme';
 import { ThemeProvider } from 'react-native-elements';
 import * as Animatable from 'react-native-animatable';

@@ -20,11 +20,15 @@ const marvelAxios = axios.create({
 const marvelApi = {
     characters: (offset?: number): Promise<any> => marvelAxios.get(`/characters${authParams()}${(offset != undefined? `&offset=${offset}` : '')}`),
     searchCharacter: (name: string): Promise<any> => marvelAxios.get(`/characters${authParams()}&limit=40&nameStartsWith=${name}`),
-    characterComics: (characterId: number): Promise<any> => marvelAxios.get(`/character/${characterId}/comics${authParams()}`),
+    characterComics: (characterId: number, offset: number): Promise<any> => marvelAxios.get(`/characters/${characterId}/comics${authParams()}&offset=${offset}`),
 }
 
-export function generateThumbnailLink(thumbnail: ApiThumbnail): string {
+export function generateCharacterThumbnailUri(thumbnail: ApiThumbnail): string {
     return `${thumbnail.path}/standard_amazing.${thumbnail.extension}`;
+}
+
+export function generateComicThumbnailUri(thumbnail: ApiThumbnail): string {
+    return `${thumbnail.path}/portrait_incredible.${thumbnail.extension}`;
 }
 
 export default marvelApi;

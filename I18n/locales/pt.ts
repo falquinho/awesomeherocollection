@@ -11,7 +11,8 @@ const pt: ITranslation = {
     back: "Voltar",
     letsGo: "Vamos lá!",
     fetchingHeroes: "Buscando Heróis...",
-    retrievingHeroes: "Recuperando Heróis..."
+    retrievingHeroes: "Recuperando Heróis...",
+    retrievingComics: "Recuperando Quadrinhos...",
 } 
 
 export default pt;  
