@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavigationProp, RouteProp } from '@react-navigation/native';
-import { SafeAreaView, StyleSheet, FlatList, View, TouchableOpacity, Modal } from 'react-native';
+import { SafeAreaView, StyleSheet, FlatList, View, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import ComicPanel from '../../components/ComicPanel';
 import { ApiCharacter } from '../../interfaces/ApiCharacter';
 import { Icon, Text, ListItem, Avatar } from 'react-native-elements';
@@ -37,7 +37,9 @@ class ComixCollectionScreen extends React.Component<Props, State> {
   /** Build a route params object for this screen. */
   static RouteParams(params: {favoriteHero: ApiCharacter}): RouteParams {
     return params;
-  } 
+  }
+
+  focusedComicAnimatableRef: any;
   
   constructor(props: Props) {
     super(props);
@@ -129,6 +131,7 @@ class ComixCollectionScreen extends React.Component<Props, State> {
       comics,
       focusedComic,
       fetching,
+      refreshing,
     } = this.state;
     return (
       <SafeAreaView style={{flex: 1}}>
@@ -147,7 +150,7 @@ class ComixCollectionScreen extends React.Component<Props, State> {
               </TouchableOpacity>
             )}
             onRefresh={() => this.handleRefresh()}
-            refreshing={fetching}
+            refreshing={refreshing}
             numColumns={2}
             columnWrapperStyle={{flex: 1, paddingHorizontal: 4}}
             onEndReached={() => this.handleFlastListEndReached()}
@@ -158,32 +161,40 @@ class ComixCollectionScreen extends React.Component<Props, State> {
         </ComicPanel>
 
         <Modal visible={focusedComic != undefined} transparent>
-          <View style={{flex: 1, padding: 16}}>
+          <View style={{ flex: 1, backgroundColor: "#000000aa" }}>
             {focusedComic != undefined && (
-              <Animatable.View style={{ flex: 2, width: "50%", alignSelf: "center" }} animation="zoomIn">
-                <MagazineItem comic={focusedComic}/>
+              <Animatable.View style={{ flex: 1, alignSelf: "center" }} animation="zoomInUp" duration={500}>
+                <TouchableWithoutFeedback 
+                  style={{ alignSelf: "center", backgroundColor: "red", height: 32 }}
+                  onPress={() => this.focusedComicAnimatableRef?.spin()}>
+                  <Animatable.View ref={ref => this.focusedComicAnimatableRef = ref}>
+                    <MagazineItem comic={focusedComic}/>
+                  </Animatable.View>
+                </TouchableWithoutFeedback>
               </Animatable.View>
             )}
             {focusedComic != undefined && (
-              <Animatable.View style={{ flex: 1 }}>
-                <ComicPanel style={{ margin: 8 }}>
+              <Animatable.View>
+                <ComicPanel>
                   <ListItem>
-                    <Avatar></Avatar>
+                    <Avatar icon={{ name: "book-open-page-variant", type: "material-community", color: "black" }}/>
                     <ListItem.Content>
-                      <ListItem.Subtitle>{I18n.t("title")}</ListItem.Subtitle>
                       <ListItem.Title>{focusedComic.title}</ListItem.Title>
+                      <ListItem.Subtitle>{I18n.t("title")}</ListItem.Subtitle>
                     </ListItem.Content>
                   </ListItem>
                   {focusedComic.prices.map(el => (
                     <ListItem>
-                      <Avatar></Avatar>
+                      <Avatar icon={{ name: "currency-usd", type: "material-community", color: "black" }}/>
                       <ListItem.Content>
-                        <ListItem.Subtitle>{el.type}</ListItem.Subtitle>
                         <ListItem.Title>{el.price} USD</ListItem.Title>
+                        <ListItem.Subtitle>{el.type}</ListItem.Subtitle>
                       </ListItem.Content>
                     </ListItem>
                   ))}
-                  <Icon style={{ position: "absolute", top: 8, right: 8 }} name="close" onPress={() => this.setState({ focusedComic: undefined })}/>
+                  <View style={{ position: "absolute", top: 8, right: 8 }}>
+                    <Icon name="close" onPress={() => this.setState({ focusedComic: undefined })}/>
+                  </View>
                 </ComicPanel>
               </Animatable.View>
             )}
