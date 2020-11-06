@@ -23,6 +23,9 @@ const en: ITranslation = {
     http501: "Not Implemented",
     http502: "Bad Gateway",
     retry: "Retry",
+    authorize: "Authorize",
+    gpsError: "GPS Error",
+    locationUnauth: "Location Unauthorized"
 } 
 
 export default en;

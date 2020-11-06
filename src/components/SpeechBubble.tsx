@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { ViewStyle, View, ViewProps } from 'react-native';
-import Svg, { Polygon } from 'react-native-svg';
 import GlobalStyles from '../../styles';
 
 interface SpeechBubleProps extends ViewProps{

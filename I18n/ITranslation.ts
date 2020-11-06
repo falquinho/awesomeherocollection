@@ -21,6 +21,9 @@ interface ITranslation {
     http501: string,
     http502: string,
     retry: string,
+    locationUnauth: string, 
+    authorize: string,
+    gpsError: string,
 }
 
 export default ITranslation;
