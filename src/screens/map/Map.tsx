@@ -11,6 +11,7 @@ import googlePlacesApi from '../../utils/googlePlacesApi';
 import Snackbar from 'react-native-snackbar';
 import HttpErrorMessages from '../../utils/httpErrorMessages';
 import { AxiosError } from 'axios';
+import { NavigationProp } from '@react-navigation/native';
 
 /** Required by the MapView to set initial position. Values from the lib example. */
 const coordsDelta = {
@@ -23,22 +24,31 @@ interface GeoCoords {
   longitude: number
 }
 
+interface Props {
+  navigation: NavigationProp<any>,
+}
+
 interface State {
   geoposition: GeoCoords | undefined,
   gpsError: boolean,
   locPermGranted: "granted" | "denied" | "never_ask_again",
   comicStoresNearby: Array<MapsPlace>,
+  fetchingComicStores: boolean,
 }
 
-class MapScreen extends React.Component<any, State> {
-  constructor(props: any) {
+class MapScreen extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       geoposition: undefined,
       gpsError: false,
       locPermGranted: "granted",
       comicStoresNearby: [],
+      fetchingComicStores: false,
     }
+    const { navigation } = props;
+    navigation.addListener("focus", () => this.onScreenFocus());
+    navigation.addListener("blur", () => this.onScreenBlur());
   }
 
   async componentDidMount() {
@@ -56,6 +66,20 @@ class MapScreen extends React.Component<any, State> {
   requestLocationPermission(): Promise<any> {
     return PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
     .then(res => this.setState({ locPermGranted: res }));
+  }
+
+  onScreenFocus() {
+    console.log("Map Screen Focus");
+    // It's possible to leave this screen without having the comic stores. Need to check when coming back.
+    const { fetchingComicStores, comicStoresNearby } = this.state;
+    if(!fetchingComicStores && comicStoresNearby.length == 0)
+      this.updateComicStores();
+  }
+
+  onScreenBlur() {
+    console.log("Map Screen Blur");
+    // Hide snackbar so it doesn't get in the way of other screens
+    Snackbar.dismiss();
   }
 
   /** Check if permission state changed since user can change it at system settings. */
@@ -83,17 +107,26 @@ class MapScreen extends React.Component<any, State> {
 
   updateComicStores() {
     this.setState({})
-    const { geoposition } = this.state;
+    const { geoposition, fetchingComicStores } = this.state;
     if(!geoposition)
       return this.showComicsErrorUpdateSnackbar(I18n.t("gpsUndefined"));
-      
+
+    // Need to control if its fetching to avoid firing unecessary requests
+    if(fetchingComicStores)
+      return;
+
+    this.setState({ fetchingComicStores: true });
     googlePlacesApi.comicShopsClose(geoposition)
     .then(res => {
-      this.setState({ comicStoresNearby: res.data.candidates })
+      this.setState({ 
+        comicStoresNearby: res.data.candidates,
+        fetchingComicStores: false,
+      })
     })
     .catch((err: AxiosError) => {
       console.log("Error retrieving comic stores: ", JSON.stringify(err));
       this.showComicsErrorUpdateSnackbar(HttpErrorMessages[err.code ?? 0]);
+      this.setState({ fetchingComicStores: false });
     })
   }
 
