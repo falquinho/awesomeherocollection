@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, PermissionsAndroid } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import * as Animatable from 'react-native-animatable';
 import { Icon, Text, Button } from 'react-native-elements';
 import Geolocation from 'react-native-geolocation-service';
@@ -144,12 +144,22 @@ class MapScreen extends React.Component<Props, State> {
       geoposition, 
       gpsError,
       locPermGranted,
+      comicStoresNearby,
     } = this.state;
     return (
       <SafeAreaView style={{ flex: 1, justifyContent: "center" }}>
         {geoposition != undefined && (
           <Animatable.View style={{ flex: 1 }} animation="zoomIn" duration={300}>
-            <MapView style={styles.map} region={{...geoposition, ...coordsDelta}}/>
+            <MapView style={styles.map} region={{...geoposition, ...coordsDelta}}>
+            {comicStoresNearby.map(el => (
+              <Marker 
+                key={el.place_id} 
+                coordinate={{latitude: el.geometry.location.lat, longitude: el.geometry.location.lng}} 
+                title={el.name} 
+                description={el.formatted_address}
+              />
+            ))}
+            </MapView>
           </Animatable.View>
         )}
         {geoposition == undefined && (
