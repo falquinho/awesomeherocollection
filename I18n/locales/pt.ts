@@ -25,7 +25,8 @@ const pt: ITranslation = {
     retry: "Retentar",
     authorize: "Autorizar",
     gpsError: "Erro no GPS",
-    locationUnauth: "Localização Não Autorizada"
+    locationUnauth: "Localização Não Autorizada",
+    gpsUndefined: "Posição Indefinida",
 } 
 
 export default pt;  

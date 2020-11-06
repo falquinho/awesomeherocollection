@@ -6,6 +6,11 @@ import { Icon, Text, Button } from 'react-native-elements';
 import Geolocation from 'react-native-geolocation-service';
 import I18n from '../../../I18n';
 import AndroidOpenSettings from 'react-native-android-open-settings'
+import { MapsPlace } from '../../interfaces/MapsPlace';
+import googlePlacesApi from '../../utils/googlePlacesApi';
+import Snackbar from 'react-native-snackbar';
+import HttpErrorMessages from '../../utils/httpErrorMessages';
+import { AxiosError } from 'axios';
 
 /** Required by the MapView to set initial position. Values from the lib example. */
 const coordsDelta = {
@@ -22,7 +27,7 @@ interface State {
   geoposition: GeoCoords | undefined,
   gpsError: boolean,
   locPermGranted: "granted" | "denied" | "never_ask_again",
-  comicStoresNearby: Array<any>,
+  comicStoresNearby: Array<MapsPlace>,
 }
 
 class MapScreen extends React.Component<any, State> {
@@ -79,7 +84,26 @@ class MapScreen extends React.Component<any, State> {
   updateComicStores() {
     this.setState({})
     const { geoposition } = this.state;
+    if(!geoposition)
+      return this.showComicsErrorUpdateSnackbar(I18n.t("gpsUndefined"));
+      
+    googlePlacesApi.comicShopsClose(geoposition)
+    .then(res => {
+      this.setState({ comicStoresNearby: res.data.candidates })
+    })
+    .catch((err: AxiosError) => {
+      console.log("Error retrieving comic stores: ", JSON.stringify(err));
+      this.showComicsErrorUpdateSnackbar(HttpErrorMessages[err.code ?? 0]);
+    })
+  }
 
+  showComicsErrorUpdateSnackbar(text: string) {
+    const duration = Snackbar.LENGTH_INDEFINITE;
+    const action = { 
+      text: I18n.t("retry"), 
+      onPress: () => this.updateComicStores() 
+    }
+    Snackbar.show({ text, duration, action });
   }
 
   render() {

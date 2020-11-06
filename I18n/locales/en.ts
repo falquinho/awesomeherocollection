@@ -25,7 +25,8 @@ const en: ITranslation = {
     retry: "Retry",
     authorize: "Authorize",
     gpsError: "GPS Error",
-    locationUnauth: "Location Unauthorized"
+    locationUnauth: "Location Unauthorized",
+    gpsUndefined: "Location Undefined"
 } 
 
 export default en;

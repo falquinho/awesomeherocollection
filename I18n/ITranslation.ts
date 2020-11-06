@@ -24,6 +24,7 @@ interface ITranslation {
     locationUnauth: string, 
     authorize: string,
     gpsError: string,
+    gpsUndefined: string,
 }
 
 export default ITranslation;
