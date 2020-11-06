@@ -21,6 +21,12 @@ interface ITranslation {
     http501: string,
     http502: string,
     retry: string,
+    locationUnauth: string, 
+    authorize: string,
+    gpsError: string,
+    gpsUndefined: string,
+    comicStoresError: string,
+    noComicStoreFound: string,
 }
 
 export default ITranslation;

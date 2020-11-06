@@ -4,13 +4,12 @@ import { StyleSheet, Image } from 'react-native';
 import { ApiComic } from '../interfaces/ApiComic';
 import { generateComicThumbnailUri } from '../utils/marvelApi';
 import GlobalStyles from '../../styles';
-import { Text } from 'react-native-elements';
 
 function MagazineItem(props: {comic: ApiComic}): ReactElement {
     const { comic } = props;
     return (
-        <Animatable.View style={styles.container} animation="zoomIn" duration={300}>
-            <Image style={[GlobalStyles.absoluteFill, {resizeMode: "cover"}]} source={{uri: generateComicThumbnailUri(comic.thumbnail)}}/>
+        <Animatable.View style={[styles.container, GlobalStyles.panelBorder]} animation="zoomIn" duration={300}>
+            <Image style={[GlobalStyles.absoluteFill, {resizeMode: "cover", top: 0}]} source={{uri: generateComicThumbnailUri(comic.thumbnail)}}/>
         </Animatable.View>
     )
 }
@@ -22,7 +21,6 @@ const styles = StyleSheet.create({
         marginVertical: 6,
         marginHorizontal: 4,
         aspectRatio: 3/4,
-        borderRadius: 2,
         overflow: "hidden",
         elevation: 6,
         backgroundColor: "white",

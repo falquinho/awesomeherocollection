@@ -23,6 +23,12 @@ const pt: ITranslation = {
     http501: "Não Implementado",
     http502: "Gateway Ruim",
     retry: "Retentar",
+    authorize: "Autorizar",
+    gpsError: "Erro no GPS",
+    locationUnauth: "Localização Não Autorizada",
+    gpsUndefined: "Posição Indefinida",
+    comicStoresError: "Erro ao buscar Comic Shops",
+    noComicStoreFound: "Nenhuma Comic Shop Econtrada",
 } 
 
 export default pt;  
