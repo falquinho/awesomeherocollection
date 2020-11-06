@@ -12,6 +12,7 @@ import debounce from 'lodash/debounce';
 import { CharacterPanel } from '../../components/CharacterPanel';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import GlobalStyles from '../../../styles';
+import mergeObjectsWithIdStrategies from '../../utils/mergeObjectsWithIdStrategies';
 
 interface Props {
   onChangeFavoriteHero?: (hero: ApiCharacter | undefined) => void,
@@ -64,9 +65,10 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
     marvelApi.characters(heroList.length)
     .then(res => {
       const { heroList } = this.state;
+      const { data } = res.data;
       this.setState({ 
-        heroList: heroList.concat(res.data.data.results),
-        totalCharactes: res.data.data.total,
+        heroList: mergeObjectsWithIdStrategies.removeDuplicates(heroList, data.results) as ApiCharacter[], 
+        totalCharactes: data.total,
         loadMsg: "",
       });
       storeCharacterArray(heroList.concat(res.data.data.results)).catch(console.error);

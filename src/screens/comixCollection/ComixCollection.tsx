@@ -10,9 +10,10 @@ import { ApiComic } from '../../interfaces/ApiComic';
 import marvelApi from '../../utils/marvelApi';
 import MagazineItem from '../../components/MagazineItem';
 import * as Animatable from 'react-native-animatable';
-import MergeComicsStrategies, { MergeComicsFunction } from '../../utils/mergeComicsStrategies';
+import MergeComicsStrategies, { MergeArrayFunction } from '../../utils/mergeObjectsWithIdStrategies';
 import Snackbar from 'react-native-snackbar';
 import HttpErrorMessages from '../../utils/httpErrorMessages';
+import MergeObjectsWithIdStrategies from '../../utils/mergeObjectsWithIdStrategies';
 
 interface RouteParams {
   favoriteHero: ApiCharacter | undefined,
@@ -68,10 +69,11 @@ class ComixCollectionScreen extends React.Component<Props, State> {
   }
 
   /**
-   * 
+   * Requires a merge function because depending of the action it needs to either replace existing (refresh)
+   * or merge new with existing (end of list reached)
    * @param mergeStrategy Function to do the merge of current state Comics array with the fetched batch.
    */
-  fetchNextComicsBatch(mergeStrategy: MergeComicsFunction ): Promise<any> {
+  fetchNextComicsBatch(mergeStrategy: MergeArrayFunction): Promise<any> {
     const { favoriteHero, comicsOffset, totalNumComics } = this.state;
     if(!favoriteHero)
       return Promise.reject({message: "Hero undefined."});
@@ -81,7 +83,7 @@ class ComixCollectionScreen extends React.Component<Props, State> {
     .then(res => {
       const { data } = res.data;
       this.setState({ 
-        comics: mergeStrategy(this.state.comics, res.data.data.results),
+        comics: mergeStrategy(this.state.comics, res.data.data.results) as ApiComic[],
         comicsOffset: data.offset + data.count,
         totalNumComics: data.total,
       })
@@ -90,7 +92,7 @@ class ComixCollectionScreen extends React.Component<Props, State> {
 
   handleFlastListEndReached() {
     this.setState({ fetching: true });
-    this.fetchNextComicsBatch(MergeComicsStrategies.concatenate)
+    this.fetchNextComicsBatch(MergeObjectsWithIdStrategies.removeDuplicates)
     .then(res => {
       this.setState({ fetching: false });
     })
