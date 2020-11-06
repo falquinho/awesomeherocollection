@@ -96,49 +96,55 @@ class OnboardingScreen extends React.Component<Props, State> {
             </Animatable.View>
           )}
         </View>
-        <Animatable.View animation="fadeIn" duration={300}>
-          <ComicPanel style={styles.controls}>
-            <Button 
-              title={I18n.t("back")}
-              icon={{name: "arrow-back"}}
-              onPress={() => this.changePage(-1)}
-              disabled={currPageIndex == 0}
-              type="clear"
-            />
+        <View style={styles.controls}>
+          <Button 
+            title={I18n.t("back")}
+            icon={{name: "arrow-back"}}
+            onPress={() => this.changePage(-1)}
+            disabled={currPageIndex == 0}
+            type="clear"
+          />
 
-            <Text style={{fontSize: 18}}>
-              {currPageIndex + 1}/{this.pages.length}
-            </Text>
+          <Text style={{fontSize: 18}}>
+            {currPageIndex + 1}/{this.pages.length}
+          </Text>
 
-            {currPageIndex < this.pages.length -1 && <Button 
-              title={I18n.t("next")}
-              icon={{name: "arrow-forward"}}
-              iconRight
-              onPress={() => this.changePage(1)}
-              type="clear"
-            />}
-            {currPageIndex == this.pages.length -1 && <Button 
-              title={I18n.t("letsGo")}
-              icon={{name: "done"}}
-              iconRight
-              disabled={!this.canLeaveOnboarding()}
-              type="clear"
-              onPress={() => this.onOnboardingComplete()}
-            />}
-          </ComicPanel>
-        </Animatable.View>
+          {currPageIndex < this.pages.length -1 && <Button 
+            title={I18n.t("next")}
+            icon={{name: "arrow-forward"}}
+            iconRight
+            onPress={() => this.changePage(1)}
+            type="clear"
+          />}
+          {currPageIndex == this.pages.length -1 && <Button 
+            title={I18n.t("letsGo")}
+            icon={{name: "done"}}
+            iconRight
+            disabled={!this.canLeaveOnboarding()}
+            type="clear"
+            onPress={() => this.onOnboardingComplete()}
+          />}
+        </View>
       </SafeAreaView>
     )
   }
 }
 
 const styles = StyleSheet.create({
+  slideContainer: {
+    flex: 1,
+    paddingHorizontal: 4,
+    paddingVertical: 6,
+  },
   controls: { 
+    backgroundColor: "white",
     height: 56, 
     paddingHorizontal: 8, 
     flexDirection: "row", 
     justifyContent: "space-between", 
     alignItems: "center",
+    borderTopWidth: 2,
+    borderTopColor: "black",
   },
 })
 

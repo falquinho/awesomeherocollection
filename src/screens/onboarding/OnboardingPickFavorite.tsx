@@ -124,13 +124,13 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
     } = this.state;
     return (
       <SafeAreaView style={{flex: 1}}>
-        <ComicPanel style={{flex: 1}} color="#d6c64d">
+        <ComicPanel style={{flex: 1, justifyContent: "center"}} color="#d6c64d">
           <Animatable.Image
             style={styles.bustImage}
             source={require("../../assets/imgs/heroinBust.png")} 
             animation="fadeIn"
           />
-          <Animatable.View animation="zoomIn" style={{margin: 16, width: "40%"}}>
+          <Animatable.View animation="zoomIn" style={{ width: "40%", marginLeft: 16 }}>
             <SpeechBubble>
               <Text>{I18n.t("onboardingAskFavorite")}</Text>
             </SpeechBubble>
@@ -138,22 +138,24 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
         </ComicPanel>
 
         {!searchMode && (
-          <ComicPanel style={styles.favoriteBar}>
-            <View style={{flex: 1}}>
+          <ComicPanel style={[styles.favoriteBar, styles.row]}>
+            <TouchableOpacity 
+              style={[{ flex: 1 }, styles.row]} 
+              onPress={() => favoriteHero == undefined? this.toggleSearchMode() : this.handleHeroChange(undefined)}>
               <Text 
                 style={{fontSize: 16}}
                 numberOfLines={1}
                 ellipsizeMode="head">
-                {I18n.t("onboardingMyFavorite")}{favoriteHero != undefined && <Text> {favoriteHero.name}</Text>}
+                {favoriteHero != undefined? favoriteHero.name : I18n.t("onboardingMyFavorite")}
               </Text>
-            </View>
-            {favoriteHero == undefined && <Icon name="search" onPress={() => this.toggleSearchMode()}/>}
-            {favoriteHero != undefined && <Icon name="close" onPress={() => this.handleHeroChange(undefined)}/>}
+              {favoriteHero == undefined && <Icon name="search"/>}
+              {favoriteHero != undefined && <Icon name="close"/>}
+            </TouchableOpacity>
           </ComicPanel>
         )}
 
         {searchMode && (
-          <ComicPanel style={styles.favoriteBar}>
+          <ComicPanel style={[styles.favoriteBar, styles.row]}>
             <TextInput
               style={{flex: 1}}
               autoFocus
@@ -167,7 +169,7 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
           </ComicPanel>
         )}
 
-        <ComicPanel style={{flex: 3}} color="#35185e">
+        {favoriteHero == undefined && (
           <View style={styles.heroesContainer}>
             {heroList.length > 0 && (
               <FlatList
@@ -191,16 +193,17 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
               />
             )}
           </View>
+        )}
 
-          {favoriteHero != undefined && (
+        {favoriteHero != undefined && (
+          <ComicPanel style={{flex: 3}}>
             <Animatable.Image
               animation="zoomIn"
               duration={200}
               style={styles.favoritePic} source={{uri: generateCharacterThumbnailUri(favoriteHero.thumbnail)}}
             />
-          )}
-
-        </ComicPanel>
+          </ComicPanel>
+        )}
       </SafeAreaView>
     );
   }
@@ -208,8 +211,9 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
 
 const styles = StyleSheet.create({
   heroesContainer: {
-    flex: 1,
-    marginTop: -8,
+    flex: 3,
+    marginTop: -6,
+    paddingHorizontal: 8,
   },
   bustImage: {
     position: "absolute",
@@ -219,6 +223,8 @@ const styles = StyleSheet.create({
   favoriteBar: {
     height: 56,
     paddingHorizontal: 8,
+  },
+  row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
