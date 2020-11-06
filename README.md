@@ -39,7 +39,7 @@ npx react-native run-android
 
 ## Building
 ### Debug
-Make sure the app is running and then run the following commands within the project folder:
+Make sure the app is able to run and then run the following commands within the project folder:
 ```bash
 npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
 ```
