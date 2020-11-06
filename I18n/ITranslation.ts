@@ -25,6 +25,8 @@ interface ITranslation {
     authorize: string,
     gpsError: string,
     gpsUndefined: string,
+    comicStoresError: string,
+    noComicStoreFound: string,
 }
 
 export default ITranslation;

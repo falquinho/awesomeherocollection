@@ -6,11 +6,11 @@ const googlePlacesAxios = axios.create({
     timeout: 10000,
 });
 
-const requiredParams = "&key=&inputtype=textquery";
+const requiredParams = "&key=AIzaSyD6xV0oxu3bgsKnWuA-6etd-X-8Er2jl5g&inputtype=textquery&fields=name,geometry,formatted_address,place_id";
 
 const googlePlacesApi = {
     comicShopsClose: ({latitude, longitude}: any): Promise<AxiosResponse<{candidates: MapsPlace[]}>> => {
-        return googlePlacesAxios.get(`/json?&input=comic+book${requiredParams}&locationbias=point:${latitude},${longitude}`)
+        return googlePlacesAxios.get(`/json?&input=comic+book${requiredParams}&locationbias=circle:1000@${latitude},${longitude}`)
     },
 }
 

@@ -73,7 +73,7 @@ class MapScreen extends React.Component<Props, State> {
     // It's possible to leave this screen without having the comic stores. Need to check when coming back.
     const { fetchingComicStores, comicStoresNearby } = this.state;
     if(!fetchingComicStores && comicStoresNearby.length == 0)
-      this.updateComicStores();
+      this.showComicShopsUpdateSnackbar(I18n.t("noComicStoreFound"));
   }
 
   onScreenBlur() {
@@ -109,7 +109,7 @@ class MapScreen extends React.Component<Props, State> {
     this.setState({})
     const { geoposition, fetchingComicStores } = this.state;
     if(!geoposition)
-      return this.showComicsErrorUpdateSnackbar(I18n.t("gpsUndefined"));
+      return this.showComicShopsUpdateSnackbar(`${I18n.t("comicStoresError")}. ${I18n.t("gpsUndefined")}`);
 
     // Need to control if its fetching to avoid firing unecessary requests
     if(fetchingComicStores)
@@ -125,12 +125,12 @@ class MapScreen extends React.Component<Props, State> {
     })
     .catch((err: AxiosError) => {
       console.log("Error retrieving comic stores: ", JSON.stringify(err));
-      this.showComicsErrorUpdateSnackbar(HttpErrorMessages[err.code ?? 0]);
+      this.showComicShopsUpdateSnackbar(`${I18n.t("comicStoresError")}. ${HttpErrorMessages[err.code ?? 0]}`);
       this.setState({ fetchingComicStores: false });
     })
   }
 
-  showComicsErrorUpdateSnackbar(text: string) {
+  showComicShopsUpdateSnackbar(text: string) {
     const duration = Snackbar.LENGTH_INDEFINITE;
     const action = { 
       text: I18n.t("retry"), 
