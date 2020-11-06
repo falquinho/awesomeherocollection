@@ -4,6 +4,7 @@ import { MapsPlace } from '../interfaces/MapsPlace';
 const googlePlacesAxios = axios.create({
     url: "https://maps.googleapis.com/maps/api/place/findplacefromtext",
     timeout: 10000,
+    headers: {accept: "application/json"}
 });
 
 const requiredParams = "&key=AIzaSyD6xV0oxu3bgsKnWuA-6etd-X-8Er2jl5g&inputtype=textquery&fields=name,geometry,formatted_address,place_id";
