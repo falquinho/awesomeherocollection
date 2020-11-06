@@ -53,3 +53,7 @@ cd android
 ```
 
 Generated .apk is located at ```android/app/build/outputs/apk/debug```
+
+## Other
+### Comic Shops
+I was unable to get Google Places Api to work. According to my research it's a CORS issue, and apparently the API even blocks proxy CORS servers.
