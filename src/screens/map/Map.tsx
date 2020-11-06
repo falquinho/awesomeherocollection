@@ -22,6 +22,7 @@ interface State {
   geoposition: GeoCoords | undefined,
   gpsError: boolean,
   locPermGranted: "granted" | "denied" | "never_ask_again",
+  comicStoresNearby: Array<any>,
 }
 
 class MapScreen extends React.Component<any, State> {
@@ -31,6 +32,7 @@ class MapScreen extends React.Component<any, State> {
       geoposition: undefined,
       gpsError: false,
       locPermGranted: "granted",
+      comicStoresNearby: [],
     }
   }
 
@@ -40,6 +42,15 @@ class MapScreen extends React.Component<any, State> {
     }
     if(await this.isLocationPermissionGranted())
       this.updateGeolocationState();
+  }
+
+  isLocationPermissionGranted(): Promise<boolean> {
+    return PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+  }
+
+  requestLocationPermission(): Promise<any> {
+    return PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+    .then(res => this.setState({ locPermGranted: res }));
   }
 
   /** Check if permission state changed since user can change it at system settings. */
@@ -59,19 +70,16 @@ class MapScreen extends React.Component<any, State> {
     Geolocation.getCurrentPosition(
       res => {
         console.log("Geoposition", res);
-        this.setState({ geoposition: res.coords })
+        this.setState({ geoposition: res.coords }, () => this.updateComicStores())
       }, 
       err => this.setState({ gpsError: true }), 
       { maximumAge: 30000, enableHighAccuracy: true, timeout: 60000 });
   }
 
-  isLocationPermissionGranted(): Promise<boolean> {
-    return PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-  }
+  updateComicStores() {
+    this.setState({})
+    const { geoposition } = this.state;
 
-  requestLocationPermission(): Promise<any> {
-    return PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-    .then(res => this.setState({ locPermGranted: res }));
   }
 
   render() {

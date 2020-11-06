@@ -12,7 +12,7 @@ const baseDelay = 300;
 function OnboardingIntro() {  
   const timeLabel = customTimeString(new Date());
   return (
-    <ComicPanel style={{flex: 3}} color="#94d315" backgroundImage={require("../../assets/imgs/bluredCityBkg.jpeg")}>
+    <ComicPanel style={{flex: 3}} color="#333333" backgroundImage={require("../../assets/imgs/bluredCityBkg.jpeg")}>
       <ComicPanel color="#ffffff" style={styles.locationPanel}>
         <Text>{I18n.t('onboardingPlace')} {timeLabel}.</Text>
       </ComicPanel>
@@ -31,6 +31,11 @@ function OnboardingIntro() {
         <Animatable.View animation="zoomIn" duration={400} delay={baseDelay + 1200} style={{alignSelf: "flex-end"}}>
           <SpeechBubble style={{width: 128}}>
             <Text style={{textAlign: "center"}}>{I18n.t("onboardingExplanation")}</Text>
+          </SpeechBubble>
+        </Animatable.View>
+        <Animatable.View animation="zoomIn" duration={400} delay={baseDelay + 1800} style={{alignSelf: "flex-start"}}>
+          <SpeechBubble style={{width: 128}}>
+            <Text style={{textAlign: "center"}}>{I18n.t("onboardingHideout")}</Text>
           </SpeechBubble>
         </Animatable.View>
       </View>
