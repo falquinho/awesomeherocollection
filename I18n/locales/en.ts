@@ -27,7 +27,8 @@ const en: ITranslation = {
     gpsError: "GPS Error",
     locationUnauth: "Location Unauthorized",
     gpsUndefined: "Location Undefined",
-    comicStoresError: "Error fetching Comic Shops"
+    comicStoresError: "Error fetching Comic Shops",
+    noComicStoreFound: "No Comic Shop Found"
 } 
 
 export default en;

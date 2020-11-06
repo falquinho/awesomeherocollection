@@ -71,8 +71,8 @@ class MapScreen extends React.Component<Props, State> {
   onScreenFocus() {
     console.log("Map Screen Focus");
     // It's possible to leave this screen without having the comic stores. Need to check when coming back.
-    const { fetchingComicStores, comicStoresNearby } = this.state;
-    if(!fetchingComicStores && comicStoresNearby.length == 0)
+    const { geoposition, fetchingComicStores, comicStoresNearby } = this.state;
+    if(geoposition && !fetchingComicStores && comicStoresNearby.length == 0)
       this.showComicShopsUpdateSnackbar(I18n.t("noComicStoreFound"));
   }
 
