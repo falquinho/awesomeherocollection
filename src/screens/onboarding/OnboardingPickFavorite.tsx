@@ -191,7 +191,7 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
                 onEndReachedThreshold={0.1}
                 onEndReached={() => this.fetchNextCharacterBatch()}
                 ListHeaderComponent={<View style={{height: 16}}/>}
-                ListFooterComponent={loadMsg != ""? <LoadingIndicator message={loadMsg}/> : null}
+                ListFooterComponent={loadMsg != ""? <LoadingIndicator message={loadMsg} color="#000000"/> : null}
               />
             )}
           </View>
