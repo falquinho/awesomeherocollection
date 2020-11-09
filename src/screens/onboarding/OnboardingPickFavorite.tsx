@@ -13,6 +13,7 @@ import { CharacterPanel } from '../../components/CharacterPanel';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import GlobalStyles from '../../../styles';
 import mergeObjectsWithIdStrategies from '../../utils/mergeObjectsWithIdStrategies';
+import { show } from 'react-native-bootsplash';
 
 interface Props {
   onChangeFavoriteHero?: (hero: ApiCharacter | undefined) => void,
@@ -27,6 +28,7 @@ interface State {
   searchMode: boolean,
   searchString: string,
   searchRes: Array<ApiCharacter>,
+  showHeader: boolean,
 }
 
 class OnboardingPickFavorite extends React.Component<Props, State> {
@@ -41,6 +43,7 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
       searchMode: false,
       searchString: "",
       searchRes: [],
+      showHeader: true,
     }
   }
 
@@ -116,6 +119,13 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
     }, () => onChangeFavoriteHero?.(hero));
   }
 
+  handleScroll(scrollEvent: any) {
+    console.log(scrollEvent);
+    const showHeader = scrollEvent.contentOffset.y <= 0;
+    if(this.state.showHeader != showHeader)
+      this.setState({ showHeader });
+  }
+
   render() {
     const { 
       heroList, 
@@ -123,21 +133,24 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
       searchRes,
       loadMsg,
       favoriteHero,
+      showHeader
     } = this.state;
     return (
       <SafeAreaView style={{flex: 1}}>
-        <ComicPanel style={{flex: 1, justifyContent: "center"}} color="#d6c64d">
-          <Animatable.Image
-            style={styles.bustImage}
-            source={require("../../assets/imgs/heroinBust.png")} 
-            animation="fadeIn"
-          />
-          <Animatable.View animation="zoomIn" style={{ width: "40%", marginLeft: 16 }}>
-            <SpeechBubble>
-              <Text>{I18n.t("onboardingAskFavorite")}</Text>
-            </SpeechBubble>
-          </Animatable.View>
-        </ComicPanel>
+        <Animatable.View transition={["height", "opacity"]} duration={300} style={showHeader? styles.shownHeader : styles.hiddenHeader}>
+          <ComicPanel style={{flex: 1, justifyContent: "center"}} color="#d6c64d">
+            <Animatable.Image
+              style={styles.bustImage}
+              source={require("../../assets/imgs/heroinBust.png")} 
+              animation="fadeIn"
+            />
+            <Animatable.View animation="zoomIn" style={{ width: "40%", marginLeft: 16 }}>
+              <SpeechBubble>
+                <Text>{I18n.t("onboardingAskFavorite")}</Text>
+              </SpeechBubble>
+            </Animatable.View>
+          </ComicPanel>
+        </Animatable.View>
 
         {!searchMode && (
           <ComicPanel style={[styles.favoriteBar, styles.row]}>
@@ -187,11 +200,13 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
                 )}
                 keyExtractor={(item) => '' + item.id}
                 numColumns={2}
-                columnWrapperStyle={{flex: 1}}
+                columnWrapperStyle={{flex: 1, alignItems: "center"}}
                 onEndReachedThreshold={0.1}
                 onEndReached={() => this.fetchNextCharacterBatch()}
                 ListHeaderComponent={<View style={{height: 16}}/>}
                 ListFooterComponent={loadMsg != ""? <LoadingIndicator message={loadMsg} color="#000000"/> : null}
+                scrollEventThrottle={250}
+                onScroll={event => this.handleScroll(event.nativeEvent)}
               />
             )}
           </View>
@@ -236,6 +251,14 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     width: "100%",
     height: "100%",
+  },
+  shownHeader: {
+    height: 148,
+    opacity: 1,
+  },
+  hiddenHeader: {
+    height: 0,
+    opacity: 0,
   }
 });
 
