@@ -120,7 +120,6 @@ class OnboardingPickFavorite extends React.Component<Props, State> {
   }
 
   handleScroll(scrollEvent: any) {
-    console.log(scrollEvent);
     const showHeader = scrollEvent.contentOffset.y <= 0;
     if(this.state.showHeader != showHeader)
       this.setState({ showHeader });
